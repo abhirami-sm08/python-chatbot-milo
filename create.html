@@ -119,7 +119,23 @@
             align-items: center;
             gap: 6px;
         }
-
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    margin-right: 44px;
+  }
+  .logo-icon {
+    width: 49px;
+    height: 30px;
+    background: rgb(0,80,160);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .logo-icon svg { width: 28px; height: 28px; }
         /* --- Main Layout Container --- */
         .main-container {
             flex: 1;
@@ -324,13 +340,15 @@
 
     <nav class="navbar">
         <div class="nav-left">
+            <a class="logo" href="demo.html" >
             <div class="brand-logo">
-                <div class="logo-box">m</div>
+                <img src="images/muthoot-fincorp-logo.png" class="logo-icon"  alt="Muthoot Fincorp"/>
                 <div class="brand-name">
                     <span class="brand-title">muthoot</span>
                     <span class="brand-sub">fincorp</span>
                 </div>
-            </div>
+            </div></a>
+
             <ul class="nav-links">
                 <li>Loans</li>
                 <li>Investments</li>
@@ -338,12 +356,7 @@
                 <li>Digital Gold</li>
             </ul>
         </div>
-        <div class="nav-right">
-            <button class="btn-login-nav">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                Login
-            </button>
-        </div>
+
     </nav>
 
     <main class="main-container">
@@ -352,7 +365,7 @@
             <div class="card-header">
                 <div>
                     <div class="brand-logo" style="margin-bottom: 20px;">
-                        <div class="logo-box" style="width:28px; height:28px; font-size:16px;">m</div>
+                       <img src="images/muthoot-fincorp-logo.png" class="logo-icon" alt="Muthoot Fincorp"/>
                         <div class="brand-name">
                             <span class="brand-title" style="font-size:13px;">muthoot</span>
                             <span class="brand-sub" style="font-size:8px;">fincorp</span>
@@ -416,8 +429,8 @@
                         <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
                     </label>
                 </div>
-
-                <button type="submit" class="btn-submit">Register Account</button>
+                
+                <button type="submit" class="btn-submit" > Register Account</button> 
             </form>
 
             <div class="footer-link">
