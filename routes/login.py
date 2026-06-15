@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException, status
+<<<<<<< Updated upstream
 from models.schemas import LoginRequest, LoginResponse
 from database import get_db_connection
 from auth import verify_password, create_access_token
@@ -32,3 +33,58 @@ def login(payload: LoginRequest):
     finally:
         cursor.close()
         conn.close()
+=======
+
+from auth import create_access_token, verify_password
+from database import get_db_connection
+from models.schemas import LoginRequest, LoginResponse
+
+router = APIRouter(tags=["auth"])
+
+
+@router.post("/login", response_model=LoginResponse)
+def login_endpoint(payload: LoginRequest):
+    """Authenticate a customer and return a JWT for protected chat calls."""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute(
+            """
+            SELECT C_ID, NAME, PSWD
+            FROM CUSTOMERS
+            WHERE LOWER(EMAIL) = LOWER(:1)
+              AND NVL(UPPER(STATUS), 'ACTIVE') = 'ACTIVE'
+            """,
+            (payload.email,),
+        )
+        user = cursor.fetchone()
+
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid email or password.",
+            )
+
+        customer_id, full_name, stored_password = user
+        password_matches = (
+            verify_password(payload.password, stored_password)
+            if str(stored_password).startswith("$2")
+            else payload.password == stored_password
+        )
+
+        if not password_matches:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid email or password.",
+            )
+
+        return {
+            "access_token": create_access_token(customer_id),
+            "token_type": "bearer",
+            "full_name": full_name,
+        }
+    finally:
+        cursor.close()
+        conn.close()
+>>>>>>> Stashed changes

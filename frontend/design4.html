@@ -525,6 +525,8 @@
         const userInput = document.getElementById('userInput');
         const reportOverlay = document.getElementById('reportOverlay');
         const flaggedMsgContext = document.getElementById('flaggedMsgContext');
+        const API_BASE = 'http://127.0.0.1:8000/api';
+        const TOKEN_KEY = 'miloAccessToken';
 
         // Toggle Chat Window Open / Close
         function toggleChat() {
@@ -544,16 +546,84 @@
         }
 
         // Send Message Implementation
-        function sendMessage() {
+        async function sendMessage() {
             const text = userInput.value.trim();
             if (!text) return;
 
             renderMessage(text, 'user');
             userInput.value = '';
 
-            setTimeout(() => {
-                simulateAiReply(text);
-            }, 800);
+            if (text.toLowerCase().startsWith('/login ')) {
+                await loginFromChatCommand(text);
+                return;
+            }
+
+            if (text.toLowerCase() === '/logout') {
+                localStorage.removeItem(TOKEN_KEY);
+                renderMessage('Logged out. Use /login email password to sign in again.', 'bot');
+                return;
+            }
+
+            await sendMessageToBackend(text);
+        }
+
+        async function loginFromChatCommand(text) {
+            const parts = text.split(/\s+/);
+            if (parts.length < 3) {
+                renderMessage('Use this format: /login your@email.com yourPassword', 'bot');
+                return;
+            }
+
+            const email = parts[1];
+            const password = parts.slice(2).join(' ');
+
+            try {
+                const res = await fetch(`${API_BASE}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await res.json();
+                if (!res.ok) {
+                    renderMessage(data.detail || 'Login failed. Check your email/password and database row.', 'bot');
+                    return;
+                }
+
+                localStorage.setItem(TOKEN_KEY, data.access_token);
+                renderMessage(`Logged in as ${data.full_name}. Now ask Milo about your loan, EMI, balance, or payment.`, 'bot');
+            } catch (err) {
+                renderMessage('Cannot reach backend. Start it with: python -m uvicorn main:app --reload', 'bot');
+            }
+        }
+
+        async function sendMessageToBackend(text) {
+            const token = localStorage.getItem(TOKEN_KEY);
+            if (!token) {
+                renderMessage('Please login first using: /login your@email.com yourPassword', 'bot');
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}/chat`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ message: text })
+                });
+
+                const data = await res.json();
+                if (!res.ok) {
+                    renderMessage(data.detail || 'Chat request failed.', 'bot');
+                    return;
+                }
+
+                renderMessage(data.response, 'bot');
+            } catch (err) {
+                renderMessage('Cannot reach backend. Check that FastAPI is running at http://127.0.0.1:8000', 'bot');
+            }
         }
 
         // Core Message Renderer
