@@ -1,0 +1,1373 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login – Muthoot Fincorp</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+
+  <!-- ═══════════════════════════  CSS  ═══════════════════════════ -->
+  <style>
+    /* ---------- RESET & BASE ---------- */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f0f6ff;
+      min-height: 100vh;
+      color: #1a2d5a;
+    }
+
+    /* ---------- TOP BAR ---------- */
+    .topbar {
+      background: #1a2d5a;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .topbar-left { display: flex; }
+    .topbar a {
+      color: #fff;
+      font-size: 12.5px;
+      font-weight: 500;
+      text-decoration: none;
+      padding: 8px 18px;
+      display: inline-block;
+      transition: background .15s;
+    }
+    .topbar-left a.active { background: #1565c0; }
+    .topbar-left a:hover:not(.active) { background: rgba(255,255,255,0.08); }
+    .topbar-right {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .topbar-right a {
+      font-size: 12px;
+      color: #cdd9f0;
+      padding: 8px 12px;
+      font-weight: 400;
+    }
+    .topbar-right a:hover { color: #fff; }
+    .topbar-divider {
+      width: 1px;
+      height: 14px;
+      background: rgba(255,255,255,0.2);
+      margin: 0 2px;
+    }
+
+    /* ---------- NAVBAR ---------- */
+    nav {
+      background: #fff;
+      display: flex;
+      align-items: center;
+      padding: 0 36px;
+      height: 68px;
+      box-shadow: 0 2px 8px rgba(21,101,192,0.08);
+      position: sticky;
+      top: 0;
+      z-index: 200;
+    }
+      .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    margin-right: 44px;
+  }
+  .logo-icon {
+    width: 49px;
+    height: 30px;
+    background:rgb(0,80,160);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .logo-icon svg { width: 28px; height: 28px; }
+
+    .logo-text { line-height: 1.15; }
+    .logo-text .brand { font-size: 17px; font-weight: 800; color: #1565c0; }
+    .logo-text .sub   { font-size: 10.5px; font-weight: 700; color: #1a2d5a; letter-spacing: 2.5px; }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      flex: 1;
+    }
+    .nav-links a {
+      font-size: 13.5px;
+      font-weight: 500;
+      color: #1a2d5a;
+      text-decoration: none;
+      padding: 8px 13px;
+      border-radius: 7px;
+      transition: background .15s, color .15s;
+      white-space: nowrap;
+    }
+    .nav-links a:hover { background: #eef4ff; color: #1565c0; }
+
+    .nav-actions { display: flex; align-items: center; gap: 10px; }
+    .nav-icon-btn {
+      width: 36px; height: 36px;
+      border: 1.5px solid #e2eaf6;
+      background: #f4f8ff;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      color: #1a2d5a;
+      transition: background .15s, border-color .15s;
+    }
+    .nav-icon-btn:hover { background: #eef4ff; border-color: #1565c0; color: #1565c0; }
+
+    .btn-nav-login {
+      background: #1565c0;
+      color: #fff;
+      font-size: 13.5px;
+      font-weight: 600;
+      padding: 9px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background .2s;
+      box-shadow: 0 2px 8px rgba(21,101,192,0.25);
+    }
+    .btn-nav-login:hover { background: #1251a3; }
+
+    /* ---------- PAGE BG ---------- */
+    .page-bg {
+      min-height: calc(100vh - 104px);
+      background: linear-gradient(135deg, #d6eaff 0%, #eaf3ff 50%, #c5deff 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 20px 64px;
+      position: relative;
+      overflow: hidden;
+    }
+    .bg-circle-1 {
+      position: absolute;
+      right: -100px; top: -100px;
+      width: 500px; height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(21,101,192,0.09) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .bg-circle-2 {
+      position: absolute;
+      left: -80px; bottom: -80px;
+      width: 380px; height: 380px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(21,101,192,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .bg-circle-3 {
+      position: absolute;
+      left: 38%; top: -60px;
+      width: 200px; height: 200px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(21,101,192,0.05) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* ---------- CARD ---------- */
+    .card {
+      background: #fff;
+      border-radius: 22px;
+      box-shadow: 0 12px 50px rgba(21,101,192,0.14);
+      width: 100%;
+      max-width: 470px;
+      padding: 44px 44px 38px;
+      position: relative;
+      z-index: 1;
+      animation: cardIn .45s cubic-bezier(.22,.68,0,1.2) both;
+    }
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(28px) scale(.97); }
+      to   { opacity: 1; transform: translateY(0)   scale(1); }
+    }
+
+    /* card header */
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    .card-logo {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+    .card-logo-icon {
+      width: 40px; height: 32px;
+      background: #1565c0;
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 19px; font-weight: 800; color: #fff; letter-spacing: -1px;
+    }
+    .card-logo-text .brand { font-size: 15px; font-weight: 800; color: #1565c0; }
+    .card-logo-text .sub   { font-size: 9.5px; font-weight: 700; color: #1a2d5a; letter-spacing: 2px; }
+
+    .secure-badge {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      color: #16a34a;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+    .secure-badge svg { width: 12px; height: 12px; }
+
+    .card h1 {
+      font-size: 25px;
+      font-weight: 800;
+      color: #1a2d5a;
+      margin-bottom: 5px;
+      line-height: 1.2;
+    }
+    .card-subtitle {
+      font-size: 13.5px;
+      color: #5a7094;
+      margin-bottom: 26px;
+    }
+    .divider {
+      height: 1px;
+      background: linear-gradient(to right, #e5edf8, #c5d8f4, #e5edf8);
+      margin-bottom: 26px;
+    }
+
+    /* ---------- TABS ---------- */
+    .tabs {
+      display: flex;
+      background: #f0f6ff;
+      border-radius: 10px;
+      padding: 4px;
+      margin-bottom: 26px;
+      gap: 4px;
+    }
+    .tab-btn {
+      flex: 1;
+      border: none;
+      background: transparent;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: #7a9cc4;
+      padding: 9px 8px;
+      border-radius: 7px;
+      cursor: pointer;
+      transition: background .2s, color .2s, box-shadow .2s;
+    }
+    .tab-btn.active {
+      background: #fff;
+      color: #1565c0;
+      box-shadow: 0 2px 8px rgba(21,101,192,0.12);
+    }
+
+    /* ---------- FORM ---------- */
+    .form-section { display: none; }
+    .form-section.visible { display: block; animation: fadeSlide .3s ease both; }
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateX(12px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    .field { margin-bottom: 20px; }
+    .field-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 7px;
+    }
+    .field-label label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #1a2d5a;
+      letter-spacing: 0.2px;
+    }
+    .field-label label .req { color: #e53935; margin-left: 2px; }
+    .field-link {
+      font-size: 12px;
+      color: #1565c0;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .field-link:hover { text-decoration: underline; }
+
+    .input-wrap {
+      position: relative;
+    }
+    .input-prefix-icon {
+      position: absolute;
+      left: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #7a9cc4;
+      width: 17px; height: 17px;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .input-suffix-btn {
+      position: absolute;
+      right: 12px; top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #7a9cc4;
+      padding: 2px;
+      display: flex;
+      align-items: center;
+      transition: color .15s;
+    }
+    .input-suffix-btn:hover { color: #1565c0; }
+
+    input[type="text"],
+    input[type="password"],
+    input[type="tel"],
+    textarea {
+      width: 100%;
+      font-family: 'Inter', sans-serif;
+      font-size: 14.5px;
+      font-weight: 500;
+      color: #1a2d5a;
+      background: #f4f8ff;
+      border: 1.5px solid #ccdaf4;
+      border-radius: 10px;
+      padding: 12px 16px 12px 40px;
+      outline: none;
+      resize: none;
+      transition: border-color .2s, box-shadow .2s, background .2s;
+      
+    }
+    textarea {
+      height: 96px;
+      line-height: 1.55;
+      padding-top: 12px;
+    }
+    input:focus, textarea:focus {
+      border-color: #1565c0;
+      box-shadow: 0 0 0 3px rgba(21,101,192,0.1);
+      background: #fff;
+    }
+    input.has-suffix { padding-right: 44px; }
+    input::placeholder, textarea::placeholder { color: #a0b4cc; font-weight: 400; }
+
+    /* error state */
+    input.error, textarea.error {
+      border-color: #e53935;
+      box-shadow: 0 0 0 3px rgba(229,57,53,0.08);
+      background: #fff8f8;
+    }
+    .field-error {
+      font-size: 12px;
+      color: #e53935;
+      margin-top: 5px;
+      display: none;
+      align-items: center;
+      gap: 4px;
+    }
+    .field-error.visible { display: flex; }
+    .field-error svg { width: 13px; height: 13px; flex-shrink: 0; }
+
+    /* success state */
+    input.success { border-color: #16a34a; background: #f0fdf4; }
+
+    /* hint */
+    .field-hint {
+      font-size: 11.5px;
+      color: #8aabcc;
+      margin-top: 5px;
+    }
+
+    /* character counter */
+    .char-counter {
+      font-size: 11px;
+      color: #a0b4cc;
+      text-align: right;
+      margin-top: 4px;
+    }
+
+    /* ---------- OTP BOXES ---------- */
+    .otp-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+    .otp-input {
+      flex: 1;
+      height: 52px;
+      text-align: center;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      padding: 0 !important;
+      border-radius: 10px;
+    }
+
+    /* ---------- REMEMBER / TERMS ---------- */
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 22px;
+    }
+    .checkbox-row input[type="checkbox"] {
+      width: 17px; height: 17px;
+      padding: 0;
+      accent-color: #1565c0;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .checkbox-row label {
+      font-size: 13px;
+      color: #5a7094;
+      cursor: pointer;
+      font-weight: 400;
+    }
+    .checkbox-row label a { color: #1565c0; font-weight: 600; text-decoration: none; }
+    .checkbox-row label a:hover { text-decoration: underline; }
+
+    /* ---------- SUBMIT BUTTON ---------- */
+    .btn-submit {
+      width: 100%;
+      background: linear-gradient(135deg, #1565c0, #1976d2);
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 15.5px;
+      font-weight: 700;
+      padding: 14px;
+      border: none;
+      border-radius: 11px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background .2s, transform .1s, box-shadow .2s;
+      letter-spacing: 0.3px;
+      box-shadow: 0 4px 14px rgba(21,101,192,0.3);
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-submit::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(255,255,255,0);
+      transition: background .2s;
+    }
+    .btn-submit:hover { background: linear-gradient(135deg, #1251a3, #1565c0); box-shadow: 0 6px 18px rgba(21,101,192,0.35); }
+    .btn-submit:active { transform: scale(.98); }
+    .btn-submit:disabled { background: #b0c8e8; cursor: not-allowed; box-shadow: none; }
+    .btn-submit svg { width: 18px; height: 18px; transition: transform .2s; }
+    .btn-submit:hover svg { transform: translateX(3px); }
+
+    /* loading spinner inside button */
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2.5px solid rgba(255,255,255,0.35);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      display: none;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ---------- BOTTOM LINKS ---------- */
+    .bottom-links {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .bottom-link {
+      text-align: center;
+      font-size: 13.5px;
+      color: #5a7094;
+    }
+    .bottom-link a {
+      color: #1565c0;
+      font-weight: 700;
+      text-decoration: none;
+      margin-left: 4px;
+    }
+    .bottom-link a:hover { text-decoration: underline; }
+
+    /* ---------- TRUST BADGES ---------- */
+    .trust-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 26px;
+      padding-top: 20px;
+      border-top: 1px solid #e8f0fb;
+    }
+    .trust-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+    }
+    .trust-icon {
+      width: 34px; height: 34px;
+      background: #eef4ff;
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      color: #1565c0;
+      transition: background .2s, transform .2s;
+    }
+    .trust-item:hover .trust-icon { background: #ddeeff; transform: translateY(-2px); }
+    .trust-label { font-size: 10.5px; color: #8aabcc; font-weight: 500; text-align: center; line-height: 1.3; }
+
+    /* ---------- OTP MODAL ---------- */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 25, 60, 0.45);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .25s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal {
+      background: #fff;
+      border-radius: 20px;
+      padding: 38px 36px 32px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 20px 60px rgba(21,101,192,0.2);
+      transform: scale(.94);
+      transition: transform .3s cubic-bezier(.22,.68,0,1.2);
+      position: relative;
+    }
+    .modal-overlay.open .modal { transform: scale(1); }
+    .modal-close {
+      position: absolute;
+      top: 14px; right: 16px;
+      background: #f0f6ff;
+      border: none;
+      width: 30px; height: 30px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      color: #7a9cc4;
+      font-size: 18px;
+      transition: background .15s, color .15s;
+    }
+    .modal-close:hover { background: #e5edf8; color: #1a2d5a; }
+    .modal-icon {
+      width: 56px; height: 56px;
+      background: linear-gradient(135deg, #eef4ff, #ddeeff);
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 18px;
+      color: #1565c0;
+    }
+    .modal h2 {
+      font-size: 20px;
+      font-weight: 800;
+      color: #1a2d5a;
+      text-align: center;
+      margin-bottom: 6px;
+    }
+    .modal-sub {
+      font-size: 13px;
+      color: #5a7094;
+      text-align: center;
+      margin-bottom: 28px;
+      line-height: 1.5;
+    }
+    .modal-sub strong { color: #1565c0; }
+    .otp-timer {
+      text-align: center;
+      font-size: 12.5px;
+      color: #7a9cc4;
+      margin-bottom: 20px;
+    }
+    .otp-timer span { color: #1565c0; font-weight: 700; }
+    .otp-resend-btn {
+      background: none;
+      border: none;
+      color: #1565c0;
+      font-family: 'Inter', sans-serif;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+    .otp-resend-btn:disabled { color: #a0b4cc; cursor: not-allowed; text-decoration: none; }
+
+    /* ---------- TOAST ---------- */
+    .toast-container {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 9999;
+      pointer-events: none;
+    }
+    .toast {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      background: #fff;
+      border-radius: 12px;
+      padding: 14px 18px;
+      box-shadow: 0 8px 32px rgba(21,101,192,0.18);
+      min-width: 280px;
+      max-width: 340px;
+      border-left: 4px solid #1565c0;
+      transform: translateX(120%);
+      opacity: 0;
+      transition: transform .35s cubic-bezier(.22,.68,0,1.1), opacity .35s;
+      pointer-events: all;
+    }
+    .toast.show { transform: translateX(0); opacity: 1; }
+    .toast.success { border-left-color: #16a34a; }
+    .toast.error   { border-left-color: #e53935; }
+    .toast.warn    { border-left-color: #f59e0b; }
+    .toast-icon { flex-shrink: 0; width: 20px; height: 20px; }
+    .toast.success .toast-icon { color: #16a34a; }
+    .toast.error   .toast-icon { color: #e53935; }
+    .toast.warn    .toast-icon { color: #f59e0b; }
+    .toast.info    .toast-icon { color: #1565c0; }
+    .toast-body { flex: 1; }
+    .toast-title { font-size: 13.5px; font-weight: 700; color: #1a2d5a; }
+    .toast-msg   { font-size: 12px; color: #5a7094; margin-top: 2px; }
+    .toast-x {
+      background: none; border: none;
+      color: #a0b4cc; cursor: pointer; font-size: 16px; line-height: 1;
+      padding: 0 0 0 4px;
+    }
+
+    /* ---------- PROGRESS BAR ---------- */
+    .progress-bar {
+      height: 3px;
+      background: #e5edf8;
+      border-radius: 99px;
+      margin-bottom: 22px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(to right, #1565c0, #42a5f5);
+      border-radius: 99px;
+      width: 0;
+      transition: width .4s ease;
+    }
+
+    /* ---------- STRENGTH METER ---------- */
+    .strength-meter {
+      display: flex;
+      gap: 4px;
+      margin-top: 7px;
+    }
+    .strength-bar {
+      flex: 1;
+      height: 4px;
+      background: #e5edf8;
+      border-radius: 99px;
+      transition: background .3s;
+    }
+    .strength-bar.weak   { background: #e53935; }
+    .strength-bar.medium { background: #f59e0b; }
+    .strength-bar.strong { background: #16a34a; }
+    .strength-text { font-size: 11.5px; color: #7a9cc4; margin-top: 5px; }
+
+    /* ---------- MOBILE ---------- */
+    @media (max-width: 560px) {
+      .card { padding: 30px 22px 26px; border-radius: 18px; }
+      nav { padding: 0 16px; }
+      .nav-links { display: none; }
+      .topbar-right { display: none; }
+      .trust-row { gap: 10px; }
+      .modal { padding: 30px 22px 26px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════ TOP BAR ════════════════════ -->
+<div class="topbar">
+  <div class="topbar-left">
+    <a href="#" class="active" id="tab-personal">Personal</a>
+    <a href="#" id="tab-business">Business</a>
+    <a href="#" id="tab-nri">NRI</a>
+  </div>
+  <div class="topbar-right">
+    <a href="#">About Us</a>
+    <div class="topbar-divider"></div>
+    <a href="#">Investors</a>
+    <div class="topbar-divider"></div>
+    <a href="#">Careers</a>
+    <div class="topbar-divider"></div>
+    <a href="#">CSR</a>
+    <div class="topbar-divider"></div>
+    <a href="#">Contact Us</a>
+    <div class="topbar-divider"></div>
+    <a href="#">📍 Locate Us &#8964;</a>
+  </div>
+</div>
+
+<!-- ════════════════════ NAVBAR ════════════════════ -->
+<nav>
+  <a class="logo" href="demo.html" >
+    
+    <img src="images/muthoot-fincorp-logo.png"  class = "logo-icon" alt="Muthoot Fincorp"/>
+    <div class="logo-text">
+      <div class="brand">muthoot</div>
+      <div class="sub">FINCORP</div>
+    </div>
+  </a>
+  <div class="nav-links">
+    <a href="#">Loans &#8964;</a>
+    <a href="#">Investments &#8964;</a>
+    <a href="#">Insurance &#8964;</a>
+    <a href="#">Digital Gold</a>
+    <a href="#">Other Services &#8964;</a>
+  </div>
+  <div class="nav-actions">
+    <button class="nav-icon-btn" id="searchToggle" aria-label="Search" title="Search">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+    </button>
+    
+    </div>
+</nav>
+
+<!-- ════════════════════ PAGE ════════════════════ -->
+<div class="page-bg">
+  <div class="bg-circle-1"></div>
+  <div class="bg-circle-2"></div>
+  <div class="bg-circle-3"></div>
+
+  <div class="card" id="loginCard">
+
+    <!-- Card header -->
+    <div class="card-header">
+      <div class="card-logo">
+        <img src="images/muthoot-fincorp-logo.png" class="logo-icon" alt="Muthoot Fincorp"/>  
+        <div class="card-logo-text">
+          <div class="brand">muthoot</div>
+          <div class="sub">FINCORP</div>
+        </div>
+      </div>
+      <div class="secure-badge">
+        <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        Secure Login
+      </div>
+    </div>
+
+    <h1 id="cardTitle">Welcome Back</h1>
+    <p class="card-subtitle" id="cardSubtitle">Sign in to your Muthoot Fincorp account</p>
+
+    <!-- Progress -->
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+    <div class="divider"></div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" id="tabCUN" onclick="switchTab('cun')">Customer ID</button>
+      <!--<button class="tab-btn"        id="tabMob" onclick="switchTab('mobile')">Mobile OTP</button>
+      <button class="tab-btn"        id="tabPass" onclick="switchTab('password')">Password</button> -->
+    </div>
+
+    <!-- ── TAB: Customer Unique Number ── -->
+    <div class="form-section visible" id="section-cun">
+      <div class="field">
+        <div class="field-label">
+          <label for="cunInput">Customer Unique Number <span class="req">*</span></label>
+        </div>
+        <div class="input-wrap">
+          <svg class="input-prefix-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+          </svg>
+          <textarea id="cunInput" maxlength="20"
+            placeholder="e.g. MFC000123456"></textarea>
+        </div>
+        <div class="char-counter" id="cunCounter">0 / 20</div>
+        <div class="field-error" id="cunError">
+          <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <span id="cunErrorMsg">Please enter your Customer Unique Number.</span>
+        </div>
+        <p class="field-hint">Found on your Muthoot Fincorp account card or welcome letter.</p>
+      </div>
+      <!--Pwd-->
+    <div class="field">
+        <div class="field-label">
+          <label for="passwordInput">Password <span class="req">*</span></label>
+          <a class="field-link" onclick="showForgotModal()">Forgot Password?</a>
+        </div>
+        <div class="input-wrap">
+          <svg class="input-prefix-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          <input type="password" id="passwordInput" placeholder="Enter your password" class="has-suffix">
+          <button class="input-suffix-btn" id="togglePass" onclick="togglePassword()" title="Show / hide password">
+            <svg id="eyeIcon" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+        <div class="strength-meter" id="strengthMeter">
+          <div class="strength-bar" id="sb1"></div>
+          <div class="strength-bar" id="sb2"></div>
+          <div class="strength-bar" id="sb3"></div>
+          <div class="strength-bar" id="sb4"></div>
+        </div>
+        <div class="strength-text" id="strengthText"></div>
+        <div class="field-error" id="passError">
+          <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <span id="passErrorMsg">Please enter your password.</span>
+        </div>
+      </div>
+
+
+      <div class="checkbox-row">
+        <input type="checkbox" id="rememberCUN">
+        <label for="rememberCUN">Remember my Customer ID on this device</label>
+      </div>
+
+      <button class="btn-submit" id="btnCUN" onclick="handleCUNSubmit()">
+        <span class="btn-label">Continue</span>
+        <div class="spinner" id="spinnerCUN"></div>
+        <svg id="arrowCUN" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </button>
+    </div>
+    
+    <!-- ── TAB: Mobile OTP ── 
+    <div class="form-section" id="section-mobile">
+      <div class="field">
+        <div class="field-label">
+          <label for="mobileInput">Registered Mobile Number <span class="req">*</span></label>
+        </div>
+        <div class="input-wrap">
+          <svg class="input-prefix-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/>
+          </svg>
+          <input type="tel" id="mobileInput" maxlength="10"
+            placeholder="10-digit mobile number" class="has-suffix">
+          <button class="input-suffix-btn" onclick="sendOTP()" id="sendOTPBtn" title="Send OTP">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+            </svg>
+          </button>
+        </div>
+        <div class="field-error" id="mobileError">
+          <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <span id="mobileErrorMsg">Please enter a valid 10-digit mobile number.</span>
+        </div>
+        <p class="field-hint">OTP will be sent to your Muthoot-registered number.</p>
+      </div>
+
+      <button class="btn-submit" id="btnMobile" onclick="handleMobileSubmit()">
+        <span class="btn-label">Send OTP</span>
+        <div class="spinner" id="spinnerMobile"></div>
+        <svg id="arrowMobile" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </button>
+    </div>
+-->
+    <!-- ── TAB: Password ── 
+    <div class="form-section" id="section-password">
+      <div class="field">
+        <div class="field-label">
+          <label for="userIdInput">Customer ID / Mobile <span class="req">*</span></label>
+        </div>
+        <div class="input-wrap">
+          <svg class="input-prefix-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+          </svg>
+          <input type="text" id="userIdInput" placeholder="MFC000123456 or mobile number">
+        </div>
+        <div class="field-error" id="userIdError">
+          <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <span>Please enter your Customer ID or mobile number.</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="field-label">
+          <label for="passwordInput">Password <span class="req">*</span></label>
+          <a class="field-link" onclick="showForgotModal()">Forgot Password?</a>
+        </div>
+        <div class="input-wrap">
+          <svg class="input-prefix-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          <input type="password" id="passwordInput" placeholder="Enter your password" class="has-suffix">
+          <button class="input-suffix-btn" id="togglePass" onclick="togglePassword()" title="Show / hide password">
+            <svg id="eyeIcon" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+        <div class="strength-meter" id="strengthMeter">
+          <div class="strength-bar" id="sb1"></div>
+          <div class="strength-bar" id="sb2"></div>
+          <div class="strength-bar" id="sb3"></div>
+          <div class="strength-bar" id="sb4"></div>
+        </div>
+        <div class="strength-text" id="strengthText"></div>
+        <div class="field-error" id="passError">
+          <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <span id="passErrorMsg">Please enter your password.</span>
+        </div>
+      </div>
+
+      <div class="checkbox-row">
+        <input type="checkbox" id="rememberPass">
+        <label for="rememberPass">Keep me signed in</label>
+      </div>
+
+      <button class="btn-submit" id="btnPass" onclick="handlePasswordSubmit()">
+        <span class="btn-label">Sign In</span>
+        <div class="spinner" id="spinnerPass"></div>
+        <svg id="arrowPass" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </button>
+    </div>
+-->
+    <!-- Bottom links -->
+    <div class="bottom-links">
+      <p class="bottom-link">
+        New to Muthoot Fincorp?
+        <a href="create.html" onclick="showToast('info','Register','Redirecting to registration page…')">Create an Account</a>
+      </p>
+      <p class="bottom-link">
+        Need help?
+        <a href="#" onclick="showToast('info','Support','Our team is available 24/7 at 1800-102-1616')">Contact Support</a>
+      </p>
+    </div>
+
+    <!-- Trust badges -->
+    <div class="trust-row">
+      <div class="trust-item">
+        <div class="trust-icon">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+        </div>
+        <div class="trust-label">Secure<br>Login</div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M9 12l2 2 4-4"/><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+        </div>
+        <div class="trust-label">137+ Years<br>of Trust</div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+        </div>
+        <div class="trust-label">SSL<br>Encrypted</div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+          </svg>
+        </div>
+        <div class="trust-label">24/7<br>Support</div>
+      </div>
+    </div>
+
+  </div><!-- /card -->
+</div><!-- /page-bg -->
+
+<!-- ════════════════════ OTP MODAL ════════════════════ -->
+<div class="modal-overlay" id="otpModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeOTPModal()">&#x2715;</button>
+    <div class="modal-icon">
+      <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/>
+      </svg>
+    </div>
+    <h2>Enter OTP</h2>
+    <p class="modal-sub">A 6-digit code was sent to<br><strong id="maskedPhone"></strong></p>
+
+    <div class="otp-group" id="otpGroup">
+      <input class="otp-input" type="text" maxlength="1" inputmode="numeric" id="otp0" onInput="otpInput(0)" onKeydown="otpKey(event,0)">
+      <input class="otp-input" type="text" maxlength="1" inputmode="numeric" id="otp1" onInput="otpInput(1)" onKeydown="otpKey(event,1)">
+      <input class="otp-input" type="text" maxlength="1" inputmode="numeric" id="otp2" onInput="otpInput(2)" onKeydown="otpKey(event,2)">
+      <input class="otp-input" type="text" maxlength="1" inputmode="numeric" id="otp3" onInput="otpInput(3)" onKeydown="otpKey(event,3)">
+      <input class="otp-input" type="text" maxlength="1" inputmode="numeric" id="otp4" onInput="otpInput(4)" onKeydown="otpKey(event,4)">
+      <input class="otp-input" type="text" maxlength="1" inputmode="numeric" id="otp5" onInput="otpInput(5)" onKeydown="otpKey(event,5)">
+    </div>
+    <div class="field-error" id="otpError" style="justify-content:center;">
+      <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <span id="otpErrorMsg">Incorrect OTP. Please try again.</span>
+    </div>
+
+    <div class="otp-timer">
+      Resend OTP in <span id="otpTimerText">30s</span> &nbsp;|&nbsp;
+      <button class="otp-resend-btn" id="resendBtn" disabled onclick="resendOTP()">Resend</button>
+    </div>
+
+    <button class="btn-submit" onclick="verifyOTP()" id="verifyBtn">
+      <span class="btn-label">Verify &amp; Sign In</span>
+      <div class="spinner" id="spinnerOTP"></div>
+    </button>
+  </div>
+</div>
+
+<!-- ════════════════════ TOAST CONTAINER ════════════════════ -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ════════════════════ JAVASCRIPT ════════════════════ -->
+<script>
+/* ───── STATE ───── */
+let currentTab  = 'cun';
+let otpTimer    = null;
+let otpSeconds  = 30;
+let mobileNum   = '';
+
+/* ───── TOPBAR TABS ───── */
+document.querySelectorAll('.topbar-left a').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    document.querySelectorAll('.topbar-left a').forEach(x => x.classList.remove('active'));
+    a.classList.add('active');
+    showToast('info','Portal Switched','Switched to ' + a.textContent + ' portal');
+  });
+});
+
+/* ───── SEARCH TOGGLE ───── */
+document.getElementById('searchToggle').addEventListener('click', () => {
+  showToast('info','Search','Search functionality coming soon.');
+});
+
+/* ───── LOGIN TAB SWITCHER ───── */
+function switchTab(tab) {
+  currentTab = tab;
+  ['cun','mobile','password'].forEach(t => {
+    document.getElementById('section-' + t).classList.remove('visible');
+    document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1).replace(/^\w/, c=>c.toUpperCase()))?.classList.remove('active');
+  });
+  document.getElementById('tabCUN').classList.remove('active');
+  document.getElementById('tabMob').classList.remove('active');
+  document.getElementById('tabPass').classList.remove('active');
+
+  document.getElementById('section-' + tab).classList.add('visible');
+  const map = { cun:'tabCUN', mobile:'tabMob', password:'tabPass' };
+  document.getElementById(map[tab]).classList.add('active');
+  updateProgress();
+  clearAllErrors();
+}
+
+/* ───── PROGRESS BAR ───── */
+function updateProgress() {
+  const map = { cun: 33, mobile: 66, password: 100 };
+  document.getElementById('progressFill').style.width = (map[currentTab] || 33) + '%';
+}
+updateProgress();
+
+/* ───── CHARACTER COUNTER ───── */
+const cunInput   = document.getElementById('cunInput');
+const cunCounter = document.getElementById('cunCounter');
+cunInput.addEventListener('input', () => {
+  const len = cunInput.value.length;
+  cunCounter.textContent = len + ' / 20';
+  if (len > 0) clearError('cun');
+  if (len >= 8) cunInput.classList.add('success'); else cunInput.classList.remove('success');
+});
+
+/* ───── PASSWORD STRENGTH ───── */
+document.getElementById('passwordInput').addEventListener('input', () => {
+  const v = document.getElementById('passwordInput').value;
+  clearError('pass');
+  let score = 0;
+  if (v.length >= 8)            score++;
+  if (/[A-Z]/.test(v))         score++;
+  if (/[0-9]/.test(v))         score++;
+  if (/[^A-Za-z0-9]/.test(v))  score++;
+  const bars  = ['sb1','sb2','sb3','sb4'];
+  const labels = ['','Weak','Medium','Strong','Very Strong'];
+  const cls    = ['','weak','medium','strong','strong'];
+  bars.forEach((id, i) => {
+    const el = document.getElementById(id);
+    el.className = 'strength-bar';
+    if (i < score) el.classList.add(cls[score]);
+  });
+  document.getElementById('strengthText').textContent = v.length ? labels[score] : '';
+});
+
+/* ───── TOGGLE PASSWORD ───── */
+function togglePassword() {
+  const inp = document.getElementById('passwordInput');
+  const icon = document.getElementById('eyeIcon');
+  if (inp.type === 'password') {
+    inp.type = 'text';
+    icon.innerHTML = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>`;
+  } else {
+    inp.type = 'password';
+    icon.innerHTML = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`;
+  }
+}
+
+/* ───── VALIDATION HELPERS ───── */
+function showError(id, msg) {
+  const err = document.getElementById(id + 'Error');
+  if (msg && document.getElementById(id + 'ErrorMsg'))
+    document.getElementById(id + 'ErrorMsg').textContent = msg;
+  err?.classList.add('visible');
+  const inp = document.getElementById(id + 'Input') || document.getElementById(id + 'Inp');
+  inp?.classList.add('error');
+}
+function clearError(id) {
+  document.getElementById(id + 'Error')?.classList.remove('visible');
+  const inp = document.getElementById(id + 'Input') || document.getElementById(id + 'Inp');
+  inp?.classList.remove('error');
+}
+function clearAllErrors() {
+  ['cun','mobile','userId','pass','otp'].forEach(clearError);
+}
+
+/* ───── LOADING STATE ───── */
+function setLoading(btnId, spinnerId, arrowId, loading) {
+  const btn     = document.getElementById(btnId);
+  const spinner = document.getElementById(spinnerId);
+  const arrow   = arrowId ? document.getElementById(arrowId) : null;
+  btn.disabled = loading;
+  spinner.style.display = loading ? 'block' : 'none';
+  if (arrow) arrow.style.display = loading ? 'none' : 'block';
+}
+
+/* ───── SUBMIT HANDLERS ───── */
+function handleCUNSubmit() {
+  const val = cunInput.value.trim();
+  if (!val) { showError('cun','Please enter your Customer Unique Number.'); return; }
+  if (val.length < 6) { showError('cun','Customer ID must be at least 6 characters.'); return; }
+  clearError('cun');
+  setLoading('btnCUN','spinnerCUN','arrowCUN', true);
+  setTimeout(() => {
+    setLoading('btnCUN','spinnerCUN','arrowCUN', false);
+    showToast('success','Verified!','Customer ID found. Please complete sign-in.');
+  }, 1800);
+}
+
+function handleMobileSubmit() {
+  const val = document.getElementById('mobileInput').value.trim();
+  if (!/^[6-9]\d{9}$/.test(val)) {
+    showError('mobile','Enter a valid 10-digit Indian mobile number.');
+    return;
+  }
+  clearError('mobile');
+  mobileNum = val;
+  setLoading('btnMobile','spinnerMobile','arrowMobile', true);
+  setTimeout(() => {
+    setLoading('btnMobile','spinnerMobile','arrowMobile', false);
+    openOTPModal(val);
+  }, 1200);
+}
+
+function sendOTP() {
+  const val = document.getElementById('mobileInput').value.trim();
+  if (!/^[6-9]\d{9}$/.test(val)) {
+    showError('mobile','Enter a valid 10-digit mobile number first.');
+    return;
+  }
+  showToast('info','OTP Sent','OTP dispatched to +91 ' + val.slice(-4).padStart(10,'*'));
+}
+
+function handlePasswordSubmit() {
+  const uid  = document.getElementById('userIdInput').value.trim();
+  const pass = document.getElementById('passwordInput').value;
+  let ok = true;
+  if (!uid) { showError('userId','Please enter your Customer ID or mobile number.'); ok = false; }
+  if (!pass) { showError('pass','Please enter your password.'); ok = false; }
+  if (!ok) return;
+  setLoading('btnPass','spinnerPass','arrowPass', true);
+  setTimeout(() => {
+    setLoading('btnPass','spinnerPass','arrowPass', false);
+    showToast('success','Signed In','Welcome back! Redirecting to your dashboard…');
+    setTimeout(() => showToast('info','Dashboard','This is a demo — no redirect in preview mode.'), 1800);
+  }, 2000);
+}
+
+/* ───── OTP MODAL ───── */
+function openOTPModal(num) {
+  mobileNum = num;
+  document.getElementById('maskedPhone').textContent = '+91 ' + num.replace(/(\d{2})\d{6}(\d{2})/,'$1xxxxxx$2');
+  clearOTPBoxes();
+  document.getElementById('otpError').classList.remove('visible');
+  document.getElementById('otpModal').classList.add('open');
+  startOTPTimer();
+  setTimeout(() => document.getElementById('otp0').focus(), 200);
+}
+function closeOTPModal() {
+  document.getElementById('otpModal').classList.remove('open');
+  clearInterval(otpTimer);
+}
+function clearOTPBoxes() {
+  for (let i = 0; i < 6; i++) {
+    const el = document.getElementById('otp' + i);
+    el.value = '';
+    el.classList.remove('error','success');
+  }
+}
+function startOTPTimer() {
+  clearInterval(otpTimer);
+  otpSeconds = 30;
+  document.getElementById('resendBtn').disabled = true;
+  updateOTPTimer();
+  otpTimer = setInterval(() => {
+    otpSeconds--;
+    updateOTPTimer();
+    if (otpSeconds <= 0) {
+      clearInterval(otpTimer);
+      document.getElementById('resendBtn').disabled = false;
+    }
+  }, 1000);
+}
+function updateOTPTimer() {
+  document.getElementById('otpTimerText').textContent = otpSeconds > 0 ? otpSeconds + 's' : '0s';
+}
+function resendOTP() {
+  clearOTPBoxes();
+  document.getElementById('otpError').classList.remove('visible');
+  startOTPTimer();
+  showToast('info','OTP Resent','A new OTP has been sent to your mobile.');
+}
+function otpInput(idx) {
+  const el = document.getElementById('otp' + idx);
+  el.value = el.value.replace(/\D/g,'').slice(-1);
+  if (el.value && idx < 5) document.getElementById('otp' + (idx+1)).focus();
+  checkOTPFull();
+}
+function otpKey(e, idx) {
+  if (e.key === 'Backspace' && !document.getElementById('otp' + idx).value && idx > 0)
+    document.getElementById('otp' + (idx-1)).focus();
+}
+function checkOTPFull() {
+  const code = getOTPValue();
+  if (code.length === 6) verifyOTP();
+}
+function getOTPValue() {
+  return Array.from({length:6}, (_,i) => document.getElementById('otp'+i).value).join('');
+}
+function verifyOTP() {
+  const code = getOTPValue();
+  if (code.length < 6) {
+    document.getElementById('otpErrorMsg').textContent = 'Please enter all 6 digits.';
+    document.getElementById('otpError').classList.add('visible');
+    return;
+  }
+  document.getElementById('otpError').classList.remove('visible');
+  setLoading('verifyBtn','spinnerOTP', null, true);
+  setTimeout(() => {
+    setLoading('verifyBtn','spinnerOTP', null, false);
+    // Demo: accept "123456" as correct
+    if (code === '123456') {
+      for (let i=0;i<6;i++) document.getElementById('otp'+i).classList.add('success');
+      showToast('success','OTP Verified!','Welcome back! Signing you in…');
+      setTimeout(closeOTPModal, 1200);
+    } else {
+      document.getElementById('otpErrorMsg').textContent = 'Incorrect OTP. Try demo code: 123456';
+      document.getElementById('otpError').classList.add('visible');
+      for (let i=0;i<6;i++) document.getElementById('otp'+i).classList.add('error');
+    }
+  }, 1400);
+}
+
+/* ───── FORGOT PASSWORD ───── */
+function showForgotModal() {
+  showToast('info','Reset Password','Check your registered email or mobile for a reset link.');
+}
+
+/* ───── TOAST SYSTEM ───── */
+const TOAST_ICONS = {
+  success: `<svg class="toast-icon" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>`,
+  error:   `<svg class="toast-icon" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`,
+  warn:    `<svg class="toast-icon" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="m10.29 3.86-8.19 14A1 1 0 0 0 3 19h18a1 1 0 0 0 .89-1.45l-8.19-14a1 1 0 0 0-1.78 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
+  info:    `<svg class="toast-icon" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
+};
+function showToast(type, title, msg, duration=4000) {
+  const container = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  t.className = 'toast ' + type;
+  t.innerHTML = `
+    ${TOAST_ICONS[type] || TOAST_ICONS.info}
+    <div class="toast-body">
+      <div class="toast-title">${title}</div>
+      ${msg ? `<div class="toast-msg">${msg}</div>` : ''}
+    </div>
+    <button class="toast-x" onclick="this.closest('.toast').remove()">&#x2715;</button>
+  `;
+  container.appendChild(t);
+  requestAnimationFrame(() => { requestAnimationFrame(() => t.classList.add('show')); });
+  setTimeout(() => {
+    t.classList.remove('show');
+    setTimeout(() => t.remove(), 400);
+  }, duration);
+}
+
+/* ───── CLOSE MODAL ON OVERLAY CLICK ───── */
+document.getElementById('otpModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('otpModal')) closeOTPModal();
+});
+
+/* ───── MOBILE NUMBER DIGIT-ONLY ───── */
+document.getElementById('mobileInput').addEventListener('input', function() {
+  this.value = this.value.replace(/\D/g,'');
+  if (this.value.length === 10) clearError('mobile');
+});
+
+/* ───── KEYBOARD: ENTER TO SUBMIT ───── */
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  if (document.getElementById('otpModal').classList.contains('open')) { verifyOTP(); return; }
+  if (currentTab === 'cun')      handleCUNSubmit();
+  if (currentTab === 'mobile')   handleMobileSubmit();
+  if (currentTab === 'password') handlePasswordSubmit();
+});
+</script>
+
+</body>
+</html>
