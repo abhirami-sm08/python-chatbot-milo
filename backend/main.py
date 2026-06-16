@@ -26,9 +26,6 @@ prefix="/api"
 
 @app.get("/")
 def health_check():
-
-```
-return {
+    return {
     "status": "Milo Engine Running"
 }
-```
