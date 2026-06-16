@@ -24,6 +24,44 @@
             display: flex;
             flex-direction: column;
         }
+        .topbar {
+      background: #1a2d5a;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .topbar-left { display: flex; }
+    .topbar a {
+      color: #fff;
+      font-size: 12.5px;
+      font-weight: 500;
+      text-decoration: none;
+      padding: 8px 18px;
+      display: inline-block;
+      transition: background .15s;
+    }
+    .topbar-left a.active { background: #1565c0; }
+    .topbar-left a:hover:not(.active) { background: rgba(255,255,255,0.08); }
+    .topbar-right {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .topbar-right a {
+      font-size: 12px;
+      color: #cdd9f0;
+      padding: 8px 12px;
+      font-weight: 400;
+    }
+    .topbar-right a:hover { color: #fff; }
+    .topbar-divider {
+      width: 1px;
+      height: 14px;
+      background: rgba(255,255,255,0.2);
+      margin: 0 2px;
+    }
+
 
         /* --- Top Navigation Bar --- */
         .navbar {
@@ -119,9 +157,7 @@
             align-items: center;
             gap: 6px;
         }
-<<<<<<<<< Temporary merge branch 1
 
-=========
 .logo {
     display: flex;
     align-items: center;
@@ -139,7 +175,7 @@
     justify-content: center;
   }
   .logo-icon svg { width: 28px; height: 28px; }
->>>>>>>>> Temporary merge branch 2
+
         /* --- Main Layout Container --- */
         .main-container {
             flex: 1;
@@ -341,27 +377,47 @@
     </style>
 </head>
 <body>
+    <div class="topbar">
+  <div class="topbar-left">
+    <a href="#" class="active" id="tab-personal">Personal</a>
+    <a href="#" id="tab-business">Business</a>
+    <a href="#" id="tab-nri">NRI</a>
+  </div>
+  <div class="topbar-right">
+    <a href="#">About Us</a>
+    <div class="topbar-divider"></div>
+    <a href="#">Investors</a>
+    <div class="topbar-divider"></div>
+    <a href="#">Careers</a>
+    <div class="topbar-divider"></div>
+    <a href="#">CSR</a>
+    <div class="topbar-divider"></div>
+    <a href="#">Contact Us</a>
+    <div class="topbar-divider"></div>
+    <a href="#">📍 Locate Us &#8964;</a>
+  </div>
+</div>
 
     <nav class="navbar">
         <div class="nav-left">
-<<<<<<<<< Temporary merge branch 1
+
             <div class="brand-logo">
-                <div class="logo-box">m</div>
-=========
+                
+
             <a class="logo" href="demo.html" >
             <div class="brand-logo">
                 <img src="images/muthoot-fincorp-logo.png" class="logo-icon"  alt="Muthoot Fincorp"/>
->>>>>>>>> Temporary merge branch 2
+
                 <div class="brand-name">
                     <span class="brand-title">muthoot</span>
                     <span class="brand-sub">fincorp</span>
                 </div>
-<<<<<<<<< Temporary merge branch 1
+
             </div>
-=========
+
             </div></a>
 
->>>>>>>>> Temporary merge branch 2
+
             <ul class="nav-links">
                 <li>Loans</li>
                 <li>Investments</li>
@@ -369,16 +425,13 @@
                 <li>Digital Gold</li>
             </ul>
         </div>
-<<<<<<<<< Temporary merge branch 1
+
         <div class="nav-right">
             <button class="btn-login-nav">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
                 Login
             </button>
         </div>
-=========
-
->>>>>>>>> Temporary merge branch 2
     </nav>
 
     <main class="main-container">
@@ -387,11 +440,8 @@
             <div class="card-header">
                 <div>
                     <div class="brand-logo" style="margin-bottom: 20px;">
-<<<<<<<<< Temporary merge branch 1
-                        <div class="logo-box" style="width:28px; height:28px; font-size:16px;">m</div>
-=========
+                        
                        <img src="images/muthoot-fincorp-logo.png" class="logo-icon" alt="Muthoot Fincorp"/>
->>>>>>>>> Temporary merge branch 2
                         <div class="brand-name">
                             <span class="brand-title" style="font-size:13px;">muthoot</span>
                             <span class="brand-sub" style="font-size:8px;">fincorp</span>
@@ -455,13 +505,10 @@
                         <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
                     </label>
                 </div>
-<<<<<<<<< Temporary merge branch 1
 
                 <button type="submit" class="btn-submit">Register Account</button>
-=========
                 
                 <button type="submit" class="btn-submit" > Register Account</button> 
->>>>>>>>> Temporary merge branch 2
             </form>
 
             <div class="footer-link">
