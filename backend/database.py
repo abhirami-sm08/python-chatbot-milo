@@ -4,21 +4,18 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DB_USER = os.getenv("ORACLE_DB_USER")
-DB_PASSWORD = os.getenv("ORACLE_DB_PASSWORD")
+DB_USER = os.getenv("c##arif")
+DB_PASSWORD = os.getenv("1234")
 DB_DSN = os.getenv("ORACLE_DB_DSN")
 
 def get_db_connection():
     try:
         connection = oracledb.connect(
-user=c##arif,
-password=1234,
-dsn=DB_DSN
-)
-    return connection
-
-```
+            user=DB_USER,
+            password=DB_PASSWORD,
+            dsn=DB_DSN
+        )
+        return connection
     except Exception as e:
         print(f"Oracle DB Connection Failure: {e}")
         raise
-```
