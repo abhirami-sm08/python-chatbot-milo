@@ -16,9 +16,9 @@ def login(payload: LoginRequest):
         cursor.execute(
             """
             SELECT
-                CUSTOMER_ID,
+                C_ID,
                 NAME,
-                PASSWORD_HASH
+                PSWD
             FROM CUSTOMERS
             WHERE EMAIL = :1
             """,
