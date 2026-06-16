@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routes import login, chat
+from backend.routes import login,chat
+
 
 app = FastAPI(
 title="Milo RAG Banking Backend"

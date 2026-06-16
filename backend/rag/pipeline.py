@@ -2,14 +2,14 @@ import os
 from dotenv import load_dotenv
 import google.generativeai as genai
 
-from rag.vector_store import LocalVectorStore
-from rag.tools import query_customer_account_summary
+from backend.rag.vector_store import LocalVectorStore
+from backend.rag.tools import query_customer_account_summary
 
 load_dotenv()
 
 # Gemini Setup
 genai.configure(
-    api_key=os.getenv("GEMINI_API_KEY")
+    api_key=os.getenv("AQ.Ab8RN6JwbYSoZxAoqLZZtzk9bzJ-RGliKxUYW-kW7wfRWeS5UQ")
 )
 
 model = genai.GenerativeModel(
