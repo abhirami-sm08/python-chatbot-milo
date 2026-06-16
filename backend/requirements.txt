@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+oracledb
+python-dotenv
+python-jose
+google-generativeai
+numpy
+email-validator
