@@ -6,7 +6,7 @@ load_dotenv()
 
 DB_USER = os.getenv("c##arif")
 DB_PASSWORD = os.getenv("1234")
-DB_DSN = os.getenv("ORACLE_DB_DSN")
+DB_DSN = os.getenv("localhost/XE")
 
 def get_db_connection():
     try:
