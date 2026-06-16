@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, status
 from models.schemas import LoginRequest, LoginResponse
-from backend.database import get_db_connection
-from ..authpip import create_access_token # type: ignore
+from database import get_db_connection
+from authpip import create_access_token
 
 router = APIRouter()
 
