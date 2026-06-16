@@ -7,6 +7,9 @@ router = APIRouter()
 
 @router.post("/login", response_model=LoginResponse)
 def login(payload: LoginRequest):
+    print(payload)
+    print(type(payload))
+    print(payload.model_dump())
 
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -35,8 +38,9 @@ def login(payload: LoginRequest):
             )
 
         customer_id, full_name, stored_password = row
-
-        if payload.password != stored_password:
+        print("INPUT:", payload.password)
+        print("DB:", stored_password)
+        if payload.password.strip().upper() != stored_password.strip().upper():
 
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
