@@ -15,7 +15,7 @@ def get_db_connection():
         connection = oracledb.connect(
             user="c##devika",
             password="devika",
-            dsn=DB_DSN
+            dsn="localhost:1521/XE"
         )
 
         print("Oracle Database Connected Successfully")
