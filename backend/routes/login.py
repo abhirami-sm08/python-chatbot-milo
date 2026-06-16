@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, status
-from models.schemas import LoginRequest, LoginResponse
+from backend.models.schemas import LoginRequest, LoginResponse
 from backend.database import get_db_connection
 from backend.auth import create_access_token
 

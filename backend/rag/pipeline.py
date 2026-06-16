@@ -2,8 +2,8 @@ import os
 from dotenv import load_dotenv
 import google.generativeai as genai
 
-from rag.vector_store import LocalVectorStore
-from rag.tools import query_customer_account_summary
+from backend.rag.vector_store import LocalVectorStore
+from backend.rag.tools import query_customer_account_summary
 
 load_dotenv()
 

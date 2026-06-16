@@ -4,9 +4,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DB_USER = os.getenv("c##arif")
-DB_PASSWORD = os.getenv("1234")
-DB_DSN = os.getenv("localhost/XE")
+DB_USER = os.getenv("ORACLE_DB_USER")
+DB_PASSWORD = os.getenv("ORACLE_DB_PASSWORD")
+DB_DSN = os.getenv("ORACLE_DB_DSN")
 
 def get_db_connection():
     try:

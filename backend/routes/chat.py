@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
-from models.schemas import ChatRequest, ChatResponse
+from backend.models.schemas import ChatRequest, ChatResponse
 from backend.auth import get_current_user
-from rag.pipeline import run_milo_rag
+from backend.rag.pipeline import run_milo_rag
 from backend.database import get_db_connection
 
 router = APIRouter()
