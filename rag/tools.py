@@ -1,4 +1,4 @@
-from database import get_db_connection
+from backend.database import get_db_connection
 
 def query_customer_account_summary(customer_id):
 
