@@ -13,9 +13,9 @@ DB_DSN = os.getenv("ORACLE_DB_DSN")
 def get_db_connection():
     try:
         connection = oracledb.connect(
-            user="c##devika",
-            password="devika",
-            dsn=DB_DSN
+            user="c##abhirami",
+            password="sct206",
+            dsn="localhost:1521/XE"
         )
 
         print("Oracle Database Connected Successfully")
