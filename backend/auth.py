@@ -7,7 +7,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-SECRET_KEY = os.getenv("muthoot_fincorp_chatbot_2026")
+SECRET_KEY = os.getenv("JWT_SECRET_KEY", "muthoot_fincorp_chatbot_2026")
+print("SECRET_KEY =", SECRET_KEY)
 ALGORITHM = "HS256"
 
 security_bearer = HTTPBearer()
