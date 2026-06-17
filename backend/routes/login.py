@@ -7,11 +7,15 @@ router = APIRouter()
 
 @router.post("/login", response_model=LoginResponse)
 def login(payload: LoginRequest):
+    print(payload)
+    print(type(payload))
+    print(payload.model_dump())
 
     conn = get_db_connection()
     cursor = conn.cursor()
 
     try:
+
         cursor.execute(
             """
             SELECT
@@ -26,44 +30,32 @@ def login(payload: LoginRequest):
 
         row = cursor.fetchone()
 
-        # 1. Check if user exists
         if not row:
+
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid email or password."
             )
 
         customer_id, full_name, stored_password = row
-
-        if payload.password != stored_password:
+        print("INPUT:", payload.password)
+        print("DB:", stored_password)
+        if payload.password.strip().upper() != stored_password.strip().upper():
 
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid email or password."
             )
 
-        # 3. Generate token
         token = create_access_token(customer_id)
 
-        # 4. Construct response dictionary
-        response_data = {
+        return {
             "access_token": token,
             "token_type": "bearer",
             "full_name": full_name
         }
-        
-        return response_data
 
-    except HTTPException as http_ex:
-        # Re-raise FastAPI HTTP exceptions cleanly so they don't turn into 500s
-        raise http_ex
-    except Exception as e:
-        # Catch genuine database or system bugs and print them to your terminal
-        print(f"Database/Internal Error: {str(e)}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Internal Server Error: {str(e)}"
-        )
     finally:
+
         cursor.close()
         conn.close()

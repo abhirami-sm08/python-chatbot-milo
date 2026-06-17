@@ -18,7 +18,6 @@ def get_db_connection():
         print(DB_PASSWORD)
         print(DB_DSN)
         connection = oracledb.connect(
-
             user=DB_USER,
             password=DB_PASSWORD,
             dsn=DB_DSN
@@ -32,4 +31,3 @@ def get_db_connection():
         raise
 
     
-
