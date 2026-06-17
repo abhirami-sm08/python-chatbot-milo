@@ -9,16 +9,13 @@ def get_loan_balance(customer_id: int):
     try:
 
         cursor.execute("""
-            SELECT
-                L_ID,
-                L_TYPE,
-                P_AMT,
-                INTEREST_RATE,
-                EMI_AMT,
-                TENURE,
-                STATUS
-            FROM LOANS
-            WHERE C_ID = :1
+        SELECT e.BALANCE
+        FROM EMI_SCHEDULE e
+        JOIN LOANS l
+        ON e.L_ID = l.L_ID
+        WHERE l.C_ID = :1
+        ORDER BY e.EMI_NO DESC
+        FETCH FIRST 1 ROW ONLY
         """, (customer_id,))
 
         row = cursor.fetchone()
@@ -26,15 +23,7 @@ def get_loan_balance(customer_id: int):
         if not row:
             return "No active loan found."
 
-        return f"""
-Loan ID        : {row[0]}
-Loan Type      : {row[1]}
-Principal      : ₹{row[2]:,.2f}
-Interest Rate  : {row[3]}%
-Monthly EMI    : ₹{row[4]:,.2f}
-Tenure         : {row[5]} months
-Status         : {row[6]}
-"""
+        return f"Your current loan balance is: ₹{row[0]:,.2f}"  
 
     finally:
         cursor.close()
