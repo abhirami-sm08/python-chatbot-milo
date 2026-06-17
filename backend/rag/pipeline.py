@@ -3,71 +3,51 @@ from dotenv import load_dotenv
 import google.generativeai as genai
 
 from backend.rag.vector_store import LocalVectorStore
-from backend.rag.tools import query_customer_account_summary
+from backend.rag.router import route_query
 
 load_dotenv()
 
 # Gemini Setup
 genai.configure(
-    api_key=os.getenv("AQ.Ab8RN6JwbYSoZxAoqLZZtzk9bzJ-RGliKxUYW-kW7wfRWeS5UQ")
+    api_key=os.getenv("GEMINI_API_KEY")
 )
 
-model = genai.GenerativeModel(
-    "gemini-2.0-flash"
-)
+model = genai.GenerativeModel("gemini-2.5-flash")
 
 # Load Vector Store
 v_store = LocalVectorStore()
-v_store.populate_from_file(
-    "faq_docs/muthoot_policy.txt"
-)
+v_store.populate_from_file("faq_docs/muthoot_policy.txt")
 
-ACCOUNT_KEYWORDS = [
-    "loan",
-    "my loan",
-    "emi",
-    "my emi",
-    "balance",
-    "outstanding",
-    "payment",
-    "due date",
-    "remaining amount",
-    "loan status"
-]
 
 def run_milo_rag(
     user_query: str,
     customer_id: int
 ) -> str:
 
-    # Vector Search
+    # Retrieve FAQ context
     unstructured_context = v_store.semantic_search(
         user_query,
         top_k=2
     )
 
-    # SQL Context
-    structured_context = ""
+    # Retrieve structured Oracle data
+    structured_context = route_query(
+        user_query,
+        customer_id
+    )
 
-    if any(
-        keyword in user_query.lower()
-        for keyword in ACCOUNT_KEYWORDS
-    ):
-        structured_context = (
-            query_customer_account_summary(
-                customer_id
-            )
-        )
+    if structured_context is None:
+        structured_context = ""
 
     prompt = f"""
 You are Milo, the AI assistant for Muthoot Fincorp.
 
-Rules:
-1. Answer politely and professionally.
-2. Use SQL data when available.
-3. Use FAQ context for company policy questions.
-4. Never invent loan details.
-5. If information is unavailable, advise contacting customer support.
+Instructions:
+- Answer professionally.
+- Use DATABASE CONTEXT whenever it is available.
+- Use FAQ CONTEXT for policy and general questions.
+- Never make up customer data.
+- If information is unavailable, ask the customer to contact Muthoot customer support.
 
 DATABASE CONTEXT:
 {structured_context}
@@ -81,15 +61,13 @@ USER QUESTION:
 
     try:
 
-        response = model.generate_content(
-            prompt
-        )
+        response = model.generate_content(prompt)
 
         return response.text
 
     except Exception as e:
 
         return (
-            "Unable to generate response. "
+            "Unable to generate response.\n"
             f"Error: {str(e)}"
         )

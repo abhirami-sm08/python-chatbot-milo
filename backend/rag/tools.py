@@ -1,72 +1,178 @@
 from backend.database import get_db_connection
 
-def query_customer_account_summary(customer_id):
+
+def get_loan_balance(customer_id: int):
 
     conn = get_db_connection()
     cursor = conn.cursor()
 
     try:
 
-        cursor.execute(
-            """
-            SELECT
-                L_ID,
-                L_TYPE,
-                P_AMT,
-                INTEREST_RATE,
-                EMI_AMT
-            FROM LOANS
-            WHERE C_ID = :1
-            AND STATUS = 'ACTIVE'
-            """,
-            (customer_id,)
-        )
+        cursor.execute("""
+        SELECT e.BALANCE
+        FROM EMI_SCHEDULE e
+        JOIN LOANS l
+        ON e.L_ID = l.L_ID
+        WHERE l.C_ID = :1
+        ORDER BY e.EMI_NO DESC
+        FETCH FIRST 1 ROW ONLY
+        """, (customer_id,))
 
-        loan = cursor.fetchone()
+        row = cursor.fetchone()
 
-        if not loan:
+        if not row:
             return "No active loan found."
 
-        loan_id, loan_type, principal, rate, emi_amount = loan
-
-        cursor.execute(
-            """
-            SELECT
-                EMI_NO,
-                DUE_DATE,
-                EMI_AMT,
-                BALANCE,
-                STATUS
-            FROM EMI_SCHEDULE
-            WHERE L_ID = :1
-            ORDER BY EMI_NO
-            """,
-            (loan_id,)
-        )
-
-        emi = cursor.fetchone()
-
-        if emi:
-
-            emi_no, due_date, emi_amt, balance, emi_status = emi
-
-            return (
-                f"Loan Type: {loan_type}. "
-                f"Principal: ₹{principal}. "
-                f"Interest: {rate}%. "
-                f"EMI: ₹{emi_amount}. "
-                f"Next EMI #{emi_no} due on {due_date}. "
-                f"Remaining Balance ₹{balance}. "
-                f"Status: {emi_status}"
-            )
-
-        return (
-            f"Loan Type: {loan_type}. "
-            f"Principal: ₹{principal}. "
-            f"Interest: {rate}%."
-        )
+        return f"Your current loan balance is: ₹{row[0]:,.2f}"  
 
     finally:
+        cursor.close()
+        conn.close()
 
+def get_emi_schedule(customer_id: int):
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("""
+    SELECT
+        e.EMI_NO,
+        e.DUE_DATE,
+        e.EMI_AMT,
+        e.STATUS
+    FROM EMI_SCHEDULE e
+    JOIN LOANS l
+        ON e.L_ID = l.L_ID
+    WHERE l.C_ID = :1
+    ORDER BY e.EMI_NO
+""", (customer_id,))
+
+        rows = cursor.fetchall()
+
+        if not rows:
+            return "No EMI schedule found."
+
+        result = "EMI Schedule:\n\n"
+
+        for emi_no, due_date, amount, status in rows:
+            result += (
+                f"EMI #{emi_no}\n"
+                f"Due Date : {due_date}\n"
+                f"Amount   : ₹{amount:,.2f}\n"
+                f"Status   : {status}\n\n"
+            )
+
+        return result
+
+    finally:
+        cursor.close()
+        conn.close()
+def get_account_details(customer_id: int):
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+
+        cursor.execute("""
+            SELECT
+                A_NO,
+                A_TYPE,
+                BRANCH_CODE,
+                A_STATUS
+            FROM ACCOUNTS
+            WHERE C_ID = :1
+        """, (customer_id,))
+
+        row = cursor.fetchone()
+
+        if not row:
+            return "No account found."
+
+        return f"""
+Account Number : {row[0]}
+Account Type   : {row[1]}
+Branch Code    : {row[2]}
+Status         : {row[3]}
+"""
+
+    finally:
+        cursor.close()
+        conn.close()
+
+def get_payment_history(customer_id: int):
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+
+        cursor.execute("""
+            SELECT
+                p.AMT_PAID,
+                p.PAYMENT_DATE,
+                p.STATUS
+            FROM PAYMENTS p
+            JOIN LOANS l
+                ON p.L_ID = l.L_ID
+            WHERE l.C_ID = :1
+            ORDER BY p.PAYMENT_DATE DESC
+        """, (customer_id,))
+
+        rows = cursor.fetchall()
+
+        if not rows:
+            return "No payment history found."
+
+        result = ""
+
+        for amount, date, status in rows:
+
+            result += (
+                f"Amount : ₹{amount:,.2f}\n"
+                f"Date   : {date}\n"
+                f"Status : {status}\n\n"
+            )
+
+        return result
+
+    finally:
+        cursor.close()
+        conn.close()
+
+def get_complaint_status(customer_id: int):
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+
+        cursor.execute("""
+            SELECT
+                SUBJECT,
+                STATUS
+            FROM COMPLAINTS
+            WHERE C_ID = :1
+            ORDER BY COMPLAINT_ID DESC
+        """, (customer_id,))
+
+        rows = cursor.fetchall()
+
+        if not rows:
+            return "No complaints found."
+
+        result = ""
+
+        for subject, status in rows:
+
+            result += (
+                f"Complaint : {subject}\n"
+                f"Status    : {status}\n\n"
+            )
+
+        return result
+
+    finally:
         cursor.close()
         conn.close()
