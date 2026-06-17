@@ -1,11 +1,24 @@
-import google.generativeai as genai
+from backend.rag.tools import (
+    get_loan_balance,
+    get_emi_schedule,
+    get_account_details,
+    get_payment_history,
+    get_complaint_status,
+)
 
-API_KEY = "AQ.Ab8RN6IZmp6k6MweCBxydbgupWc_hC272CZhnyeiQiy6b_oeTA"
+customer_id = 1001
 
-genai.configure(api_key=API_KEY)
+print("========== LOAN ==========")
+print(get_loan_balance(customer_id))
 
-model = genai.GenerativeModel("gemini-2.5-flash")
+print("\n========== EMI ==========")
+print(get_emi_schedule(customer_id))
 
-response = model.generate_content("Hello")
+print("\n========== ACCOUNT ==========")
+print(get_account_details(customer_id))
 
-print(response.text)
+print("\n========== PAYMENTS ==========")
+print(get_payment_history(customer_id))
+
+print("\n========== COMPLAINTS ==========")
+print(get_complaint_status(customer_id))
