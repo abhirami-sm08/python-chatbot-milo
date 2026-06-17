@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-import google.generativeai as genai
+from google import genai
 
 from backend.rag.vector_store import LocalVectorStore
 from backend.rag.tools import query_customer_account_summary
@@ -8,13 +8,12 @@ from backend.rag.tools import query_customer_account_summary
 load_dotenv()
 
 # Gemini Setup
-genai.configure(
+client=genai.Client(
     api_key=os.getenv("AQ.Ab8RN6JwbYSoZxAoqLZZtzk9bzJ-RGliKxUYW-kW7wfRWeS5UQ")
 )
 
-model = genai.GenerativeModel(
-    "gemini-2.0-flash"
-)
+model = client.models
+
 
 # Load Vector Store
 v_store = LocalVectorStore()
@@ -79,17 +78,15 @@ USER QUESTION:
 {user_query}
 """
 
-    try:
+try:
+       response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=prompt
+      )
+      text = response.text          # ✅ must be inside try
 
-        response = model.generate_content(
-            prompt
-        )
-
-        return response.text
-
-    except Exception as e:
-
-        return (
-            "Unable to generate response. "
-            f"Error: {str(e)}"
-        )
+except Exception as e:
+      return (
+        "Unable to generate response. "
+        f"Error: {str(e)}"
+    )
