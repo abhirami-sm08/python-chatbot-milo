@@ -1,11 +1,11 @@
 import os
 import numpy as np
-from google import genai
+import google.generativeai as genai
 from dotenv import load_dotenv
 
 load_dotenv()
 
-client=genai.Client(
+genai.configure(
     api_key=os.getenv("AQ.Ab8RN6JwbYSoZxAoqLZZtzk9bzJ-RGliKxUYW-kW7wfRWeS5UQ")
 )
 
@@ -99,16 +99,15 @@ KYC verification is mandatory before loan approval.
 
         try:
 
-            client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
-            response = client.models.embed_content(
+            response = genai.embed_content(
                 model="models/text-embedding-004",
                 contents=query,
-                config={"task_type": "retrieval_query"}
-
+                task_type="retrieval_query"
             )
 
-            query_embedding = response.embeddings[0].values
-                
+            query_embedding = response[
+                "embedding"
+            ]
 
             scores = []
 
