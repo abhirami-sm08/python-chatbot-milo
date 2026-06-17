@@ -7,6 +7,7 @@ router = APIRouter()
 
 @router.post("/login", response_model=LoginResponse)
 def login(payload: LoginRequest):
+
     conn = get_db_connection()
     cursor = conn.cursor()
 
@@ -34,8 +35,8 @@ def login(payload: LoginRequest):
 
         customer_id, full_name, stored_password = row
 
-        # 2. Verify password (ensure we use payload.password to match your schema update)
         if payload.password != stored_password:
+
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid email or password."

@@ -1,13 +1,13 @@
 from pydantic import BaseModel, EmailStr
 
 class LoginRequest(BaseModel):
-    email: EmailStr # type: ignore
-    password: str
+    email: EmailStr
+password: str
 
 class LoginResponse(BaseModel):
     access_token: str
-    token_type: str    # <--- Indented with 4 spaces / 1 tab
-    full_name: str     # <--- Indented with 4 spaces / 1 tab
+token_type: str
+full_name: str
 
 class ChatRequest(BaseModel):
     message: str
