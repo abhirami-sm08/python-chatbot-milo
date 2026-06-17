@@ -9,11 +9,11 @@ load_dotenv()
 
 # Gemini Setup
 genai.configure(
-    api_key=os.getenv("AQ.Ab8RN6JwbYSoZxAoqLZZtzk9bzJ-RGliKxUYW-kW7wfRWeS5UQ")
+    api_key=os.getenv("GEMINI_API_KEY")
 )
 
 model = genai.GenerativeModel(
-    "gemini-2.0-flash"
+    "gemini-2.5-flash"
 )
 
 # Load Vector Store
