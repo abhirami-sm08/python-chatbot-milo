@@ -13,6 +13,7 @@ DB_DSN = os.getenv("ORACLE_DB_DSN")
 def get_db_connection():
     try:
         connection = oracledb.connect(
+
             user=DB_USER,
             password=DB_PASSWORD,
             dsn=DB_DSN
@@ -26,3 +27,4 @@ def get_db_connection():
         raise
 
     
+
