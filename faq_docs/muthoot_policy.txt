@@ -9,5 +9,5 @@ Interest rates start from 9.5%.
 
 Customers can repay through UPI, Net Banking, Cash and Branch Payments.
 
-KYC verification is mandatory before loan approval.
+KYC() verification is mandatory before loan approval.
                     
