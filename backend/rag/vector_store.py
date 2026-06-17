@@ -9,17 +9,14 @@ genai.configure(
     api_key=os.getenv("GEMINI_API_KEY")
 )
 
+
 class LocalVectorStore:
 
     def __init__(self):
-
         self.chunks = []
         self.embeddings = []
 
-    def populate_from_file(
-        self,
-        filepath: str
-    ):
+    def populate_from_file(self, filepath: str):
 
         if not os.path.exists(filepath):
 
@@ -34,8 +31,7 @@ class LocalVectorStore:
                 encoding="utf-8"
             ) as f:
 
-                f.write(
-                    """
+                f.write("""
 Muthoot Gold Loan Policy
 
 Gold loans are available against eligible gold ornaments.
@@ -47,15 +43,9 @@ Interest rates start from 9.5%.
 Customers can repay through UPI, Net Banking, Cash and Branch Payments.
 
 KYC verification is mandatory before loan approval.
-                    """
-                )
+""")
 
-        with open(
-            filepath,
-            "r",
-            encoding="utf-8"
-        ) as f:
-
+        with open(filepath, "r", encoding="utf-8") as f:
             text = f.read()
 
         paragraphs = [
@@ -64,29 +54,31 @@ KYC verification is mandatory before loan approval.
             if p.strip()
         ]
 
+        self.chunks.clear()
+        self.embeddings.clear()
+
         for paragraph in paragraphs:
 
             try:
 
                 response = genai.embed_content(
                     model="models/text-embedding-004",
-                    contents=paragraph,
+                    content=paragraph,
                     task_type="retrieval_document"
                 )
 
-                self.chunks.append(
-                    paragraph
+                embedding = (
+                    response["embedding"]
+                    if isinstance(response, dict)
+                    else response.embedding
                 )
 
-                self.embeddings.append(
-                    response["embedding"]
-                )
+                self.chunks.append(paragraph)
+                self.embeddings.append(embedding)
 
             except Exception as e:
 
-                print(
-                    f"Embedding Error: {e}"
-                )
+                print(f"Embedding Error: {e}")
 
     def semantic_search(
         self,
@@ -101,54 +93,39 @@ KYC verification is mandatory before loan approval.
 
             response = genai.embed_content(
                 model="models/text-embedding-004",
-                contents=query,
+                content=query,
                 task_type="retrieval_query"
             )
 
-            query_embedding = response[
-                "embedding"
-            ]
+            query_embedding = (
+                response["embedding"]
+                if isinstance(response, dict)
+                else response.embedding
+            )
 
             scores = []
 
             for embedding in self.embeddings:
 
                 similarity = (
-                    np.dot(
-                        query_embedding,
-                        embedding
-                    )
+                    np.dot(query_embedding, embedding)
                     /
                     (
-                        np.linalg.norm(
-                            query_embedding
-                        )
-                        *
-                        np.linalg.norm(
-                            embedding
-                        )
+                        np.linalg.norm(query_embedding)
+                        * np.linalg.norm(embedding)
                     )
                 )
 
-                scores.append(
-                    similarity
-                )
+                scores.append(similarity)
 
-            top_indices = (
-                np.argsort(scores)
-                [-top_k:]
-                [::-1]
-            )
+            top_indices = np.argsort(scores)[-top_k:][::-1]
 
-            return "\n".join(
-                self.chunks[index]
-                for index in top_indices
+            return "\n\n".join(
+                self.chunks[i]
+                for i in top_indices
             )
 
         except Exception as e:
 
-            print(
-                f"Vector Search Error: {e}"
-            )
-
+            print(f"Vector Search Error: {e}")
             return ""
