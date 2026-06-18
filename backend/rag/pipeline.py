@@ -1,67 +1,55 @@
 import os
+
 from dotenv import load_dotenv
 import google.generativeai as genai
 
 from backend.rag.vector_store import LocalVectorStore
 from backend.rag.router import route_query
+from backend.rag.prompts import (
+    SYSTEM_PROMPT,
+    SQL_PROMPT,
+    FAQ_PROMPT
+)
+from backend.rag.memory import (
+    add_message,
+    get_history
+)
 
 load_dotenv()
 
-# Gemini Setup
+# ----------------------------
+# Gemini Configuration
+# ----------------------------
+
 genai.configure(
     api_key=os.getenv("GEMINI_API_KEY")
 )
 
-model = genai.GenerativeModel("gemini-2.5-flash")
+model = genai.GenerativeModel(
+    "gemini-2.5-flash"
+)
 
+# ----------------------------
 # Load Vector Store
+# ----------------------------
+
 v_store = LocalVectorStore()
-v_store.populate_from_file("faq_docs/muthoot_policy.txt")
 
+v_store.populate_from_file(
+    "faq_docs/muthoot_policy.txt"
+)
 
-def run_milo_rag(
-    user_query: str,
-    customer_id: int
-) -> str:
+# ----------------------------
+# Gemini Response
+# ----------------------------
 
-    # Retrieve FAQ context
-    unstructured_context = v_store.semantic_search(
-        user_query,
-        top_k=2
-    )
-
-    # Retrieve structured Oracle data
-    structured_context = route_query(
-        user_query,
-        customer_id
-    )
-
-    if structured_context is None:
-        structured_context = ""
-
-    prompt = f"""
-You are Milo, the AI assistant for Muthoot Fincorp.
-
-Instructions:
-- Answer professionally.
-- Use DATABASE CONTEXT whenever it is available.
-- Use FAQ CONTEXT for policy and general questions.
-- Never make up customer data.
-- If information is unavailable, ask the customer to contact Muthoot customer support.
-
-DATABASE CONTEXT:
-{structured_context}
-
-FAQ CONTEXT:
-{unstructured_context}
-
-USER QUESTION:
-{user_query}
-"""
+def generate_response(prompt: str):
 
     try:
 
-        response = model.generate_content(prompt)
+        response = model.generate_content(
+            prompt
+        )
 
         return response.text
 
@@ -71,3 +59,110 @@ USER QUESTION:
             "Unable to generate response.\n"
             f"Error: {str(e)}"
         )
+
+# ----------------------------
+# Main RAG Pipeline
+# ----------------------------
+
+def run_milo_rag(
+    user_query: str,
+    customer_id: int
+):
+
+    # Get previous conversation
+
+    history = get_history(
+        customer_id
+    )
+
+    # Detect Intent
+
+    intent, structured_context = route_query(
+        user_query,
+        customer_id
+    )
+
+    # ======================================================
+    # SQL QUERIES
+    # ======================================================
+
+    if intent != "faq":
+
+        prompt = SQL_PROMPT.format(
+
+            system=SYSTEM_PROMPT,
+
+            context=f"""
+Conversation History:
+
+{history}
+
+Database Result:
+
+{structured_context}
+""",
+
+            question=user_query
+        )
+
+        response = generate_response(
+            prompt
+        )
+
+        add_message(
+            customer_id,
+            "User",
+            user_query
+        )
+
+        add_message(
+            customer_id,
+            "Milo",
+            response
+        )
+
+        return response
+
+    # ======================================================
+    # FAQ + RAG
+    # ======================================================
+
+    faq_context = v_store.semantic_search(
+        user_query,
+        top_k=3
+    )
+
+    prompt = FAQ_PROMPT.format(
+
+        system=SYSTEM_PROMPT,
+
+        context=f"""
+Conversation History:
+
+{history}
+
+Knowledge Base:
+
+{faq_context}
+""",
+
+        question=user_query
+    )
+
+    response = generate_response(
+        prompt
+    )
+
+    add_message(
+        customer_id,
+        "User",
+        user_query
+    )
+
+    add_message(
+        customer_id,
+        "Milo",
+        response
+    )
+
+    return response
