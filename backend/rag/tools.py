@@ -1,6 +1,104 @@
 from backend.database import get_db_connection
 
 
+def get_account_details(customer_id):
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT
+            A_NO,
+            A_TYPE,
+            BRANCH_CODE,
+            A_STATUS
+        FROM ACCOUNTS
+        WHERE C_ID = :1
+    """, (customer_id,))
+
+    row = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+
+    if not row:
+        return "No account found."
+
+    return f"""
+Account Number : {row[0]}
+Account Type   : {row[1]}
+Branch Code    : {row[2]}
+Status         : {row[3]}
+"""
+
+def get_customer_profile(customer_id):
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT
+            NAME,
+            PHONE,
+            EMAIL,
+            STATUS
+        FROM CUSTOMERS
+        WHERE C_ID = :1
+    """, (customer_id,))
+
+    row = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+
+    if not row:
+        return "Customer not found."
+
+    return f"""
+Name    : {row[0]}
+Phone   : {row[1]}
+Email   : {row[2]}
+Status  : {row[3]}
+"""
+
+
+def get_loan_details(customer_id):
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT
+            L_ID,
+            L_TYPE,
+            P_AMT,
+            INTEREST_RATE,
+            EMI_AMT,
+            TENURE,
+            STATUS
+        FROM LOANS
+        WHERE C_ID = :1
+    """, (customer_id,))
+
+    row = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+
+    if not row:
+        return "No loan found."
+
+    return f"""
+Loan ID        : {row[0]}
+Loan Type      : {row[1]}
+Principal      : ₹{row[2]:,.2f}
+Interest Rate  : {row[3]}%
+Monthly EMI    : ₹{row[4]:,.2f}
+Tenure         : {row[5]} months
+Status         : {row[6]}
+"""
+
+
 def get_loan_balance(customer_id: int):
 
     conn = get_db_connection()
@@ -64,38 +162,6 @@ def get_emi_schedule(customer_id: int):
             )
 
         return result
-
-    finally:
-        cursor.close()
-        conn.close()
-def get_account_details(customer_id: int):
-
-    conn = get_db_connection()
-    cursor = conn.cursor()
-
-    try:
-
-        cursor.execute("""
-            SELECT
-                A_NO,
-                A_TYPE,
-                BRANCH_CODE,
-                A_STATUS
-            FROM ACCOUNTS
-            WHERE C_ID = :1
-        """, (customer_id,))
-
-        row = cursor.fetchone()
-
-        if not row:
-            return "No account found."
-
-        return f"""
-Account Number : {row[0]}
-Account Type   : {row[1]}
-Branch Code    : {row[2]}
-Status         : {row[3]}
-"""
 
     finally:
         cursor.close()
