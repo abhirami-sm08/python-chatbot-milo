@@ -1,39 +1,85 @@
-from backend.rag.intent_classifier import classify_intent
+from backend.rag.tools import *
 
-from backend.rag.tools import (
-    get_loan_balance,
-    get_loan_details,
-    get_emi_schedule,
-    get_payment_history,
-    get_account_details,
-    get_customer_profile,
-    get_complaint_status
-)
+SQL_INTENTS = {
+
+    "loan_balance": get_loan_balance,
+
+    "emi_schedule": get_emi_schedule,
+
+    "payment_history": get_payment_history,
+
+    "complaint_status": get_complaint_status
+
+}
 
 
-def route_query(query: str, customer_id: int):
+HYBRID_KEYWORDS = [
 
-    intent = classify_intent(query)
+    "policy",
 
-    if intent == "loan_balance":
-        return intent, get_loan_balance(customer_id)
+    "eligible",
 
-    elif intent == "loan_details":
-        return intent, get_loan_details(customer_id)
+    "eligibility",
 
-    elif intent == "emi":
-        return intent, get_emi_schedule(customer_id)
+    "why",
 
-    elif intent == "payment_history":
-        return intent, get_payment_history(customer_id)
+    "can",
 
-    elif intent == "account_details":
-        return intent, get_account_details(customer_id)
+    "should",
 
-    elif intent == "customer_profile":
-        return intent, get_customer_profile(customer_id)
+    "explain",
 
-    elif intent == "complaint":
-        return intent, get_complaint_status(customer_id)
+    "benefits",
 
-    return "faq", None
+    "documents",
+
+    "interest",
+
+    "gold loan",
+
+    "preclose",
+
+    "pre close",
+
+    "foreclose"
+
+]
+
+
+def route_query(
+    intent,
+    user_query,
+    customer_id
+):
+
+    sql_result = ""
+
+    faq_required = False
+
+    if intent in SQL_INTENTS:
+
+        sql_result = SQL_INTENTS[intent](customer_id)
+
+    query = user_query.lower()
+
+    if any(
+
+        word in query
+
+        for word in HYBRID_KEYWORDS
+
+    ):
+
+        faq_required = True
+
+    elif intent == "faq":
+
+        faq_required = True
+
+    return (
+
+        sql_result,
+
+        faq_required
+
+    )

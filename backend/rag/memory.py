@@ -1,47 +1,42 @@
-from collections import defaultdict
-
-MAX_HISTORY = 5
-
-conversation_memory = defaultdict(list)
+from backend.database import get_db_connection
 
 
-def add_message(customer_id, role, message):
+def get_chat_history(
+    customer_id: int,
+    limit: int = 10
+):
 
-    conversation_memory[customer_id].append(
-        {
-            "role": role,
-            "message": message
-        }
+    conn = get_db_connection()
+
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        SELECT sender,
+               msg_txt
+        FROM chat_msgs
+        WHERE c_id = :1
+        ORDER BY timestamp DESC
+        FETCH FIRST :2 ROWS ONLY
+        """,
+        (
+            customer_id,
+            limit
+        )
     )
 
-    if len(conversation_memory[customer_id]) > MAX_HISTORY * 2:
+    rows = cursor.fetchall()
 
-        conversation_memory[customer_id] = (
-            conversation_memory[customer_id][-MAX_HISTORY * 2:]
-        )
+    cursor.close()
 
+    conn.close()
 
-def get_history(customer_id):
+    rows.reverse()
 
-    history = conversation_memory.get(customer_id, [])
+    history = ""
 
-    if not history:
-        return ""
+    for sender, message in rows:
 
-    formatted = ""
+        history += f"{sender}: {message}\n"
 
-    for chat in history:
-
-        formatted += (
-            f"{chat['role']}: "
-            f"{chat['message']}\n"
-        )
-
-    return formatted
-
-
-def clear_history(customer_id):
-
-    if customer_id in conversation_memory:
-
-        del conversation_memory[customer_id]
+    return history
