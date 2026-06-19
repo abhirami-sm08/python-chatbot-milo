@@ -1,30 +1,35 @@
 from backend.database import get_db_connection
 
-
-def get_chat_history(
-    customer_id: int,
-    limit: int = 10
-):
+def get_chat_history(customer_id, limit=8):
 
     conn = get_db_connection()
-
     cursor = conn.cursor()
 
-    cursor.execute(
-        """
-        SELECT sender,
-               msg_txt
-        FROM chat_msgs
-        WHERE c_id = :1
-        ORDER BY timestamp DESC
-        FETCH FIRST :2 ROWS ONLY
-        """,
-        (
-            customer_id,
-            limit
-        )
-    )
+    cursor.execute("""
+        SELECT
+    SENDER,
+    MSG_TXT
+FROM CHAT_MSGS
+WHERE C_ID = :1
+ORDER BY TIMESTAMP DESC
+FETCH FIRST :2 ROWS ONLY
+    """, [customer_id, limit])
 
+    history = ""
+
+    rows = cursor.fetchall()
+
+    for sender, message in rows:
+
+        if hasattr(message, "read"):
+            message = message.read()
+
+        history += f"{sender}: {message}\n"
+
+    cursor.close()
+    conn.close()
+
+    return history
     rows = cursor.fetchall()
 
     cursor.close()

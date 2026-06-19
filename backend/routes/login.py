@@ -17,16 +17,16 @@ def login(payload: LoginRequest):
     try:
 
         cursor.execute(
-            """
-            SELECT
-                C_ID,
-                NAME,
-                PSWD
-            FROM CUSTOMERS
-            WHERE EMAIL = :1
-            """,
-            (payload.email,)
-        )
+    """
+    SELECT
+        C_ID,
+        NAME,
+        PSWD
+    FROM CUSTOMERS
+    WHERE UNID = :1
+    """,
+    (payload.unid,)
+)
 
         row = cursor.fetchone()
 
@@ -34,7 +34,7 @@ def login(payload: LoginRequest):
 
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid email or password."
+                detail="Invalid Customer ID or Password."
             )
 
         customer_id, full_name, stored_password = row
@@ -44,7 +44,7 @@ def login(payload: LoginRequest):
 
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid email or password."
+                detail="Invalid Customer ID or Password."
             )
 
         token = create_access_token(customer_id)

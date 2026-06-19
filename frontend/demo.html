@@ -1441,134 +1441,272 @@
         </div>
     </div>
 </div>
-
 <script>
-    const widget = document.getElementById('chatbotWidget');
-    const chatMessages = document.getElementById('chatMessages');
-    const userInput = document.getElementById('userInput');
-    const reportOverlay = document.getElementById('reportOverlay');
-    const flaggedMsgContext = document.getElementById('flaggedMsgContext');
+const API_BASE = "http://127.0.0.1:8000";
 
-    // Toggle Chat Window Open / Close
-    function toggleChat() {
-        widget.classList.toggle('open');
-        if(widget.classList.contains('open')) {
-            setTimeout(() => {
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }, 100);
-        }
-    }
+const widget = document.getElementById("chatbotWidget");
+const chatMessages = document.getElementById("chatMessages");
+const userInput = document.getElementById("userInput");
+const reportOverlay = document.getElementById("reportOverlay");
+const flaggedMsgContext = document.getElementById("flaggedMsgContext");
 
-    // Handle Enter Key Press
-    function handleKeyPress(event) {
-        if (event.key === 'Enter') {
-            sendMessage();
-        }
-    }
+const token = localStorage.getItem("access_token");
 
-    // Send Message Implementation
-    function sendMessage() {
-        const text = userInput.value.trim();
-        if (!text) return;
+if (!token) {
+    alert("Please login first.");
+    window.location.href = "login.html";
+}
 
-        renderMessage(text, 'user');
-        userInput.value = '';
+function toggleChat() {
+    widget.classList.toggle("open");
 
+    if (widget.classList.contains("open")) {
         setTimeout(() => {
-            simulateAiReply(text);
-        }, 800);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }, 100);
     }
+}
 
-    // Core Message Renderer
-    function renderMessage(text, sender) {
-        const msgDiv = document.createElement('div');
-        msgDiv.classList.add('message', sender);
+function handleKeyPress(event) {
+    if (event.key === "Enter") {
+        sendMessage();
+    }
+}
 
-        if (sender === 'bot') {
-            const safeText = text.replace(/'/g, "\\'");
-            
-            msgDiv.innerHTML = `
-                <div class="msg-avatar"></div>
-                <div class="bubble">${text}</div>
-                <div class="msg-options-wrapper">
-                    <button class="msg-options-btn" onclick="toggleActionMenu(this, event)">
-                        <i class="fa-solid fa-ellipsis-vertical"></i>
+function renderMessage(text, sender) {
+
+    const msgDiv = document.createElement("div");
+    msgDiv.classList.add("message", sender);
+
+    if (sender === "bot") {
+
+        const safe = text.replace(/'/g, "\\'");
+
+        msgDiv.innerHTML = `
+            <div class="msg-avatar"></div>
+
+            <div class="bubble">
+                ${text}
+            </div>
+
+            <div class="msg-options-wrapper">
+
+                <button
+                    class="msg-options-btn"
+                    onclick="toggleActionMenu(this,event)"
+                >
+                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                </button>
+
+                <div class="msg-action-menu">
+
+                    <button
+                        class="msg-action-item"
+                        onclick="openReportForm('${safe}')"
+                    >
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        Report Issue
                     </button>
-                    <div class="msg-action-menu">
-                        <button class="msg-action-item" onclick="openReportForm('${safeText}')">
-                            <i class="fa-solid fa-triangle-exclamation"></i> Report Issue
-                        </button>
-                    </div>
+
                 </div>
-            `;
-        } else {
-            msgDiv.innerHTML = `<div class="bubble">${text}</div>`;
+
+            </div>
+        `;
+
+    } else {
+
+        msgDiv.innerHTML = `
+            <div class="bubble">
+                ${text}
+            </div>
+        `;
+
+    }
+
+    chatMessages.appendChild(msgDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function addTyping() {
+
+    const div = document.createElement("div");
+
+    div.className = "message bot";
+
+    div.id = "typing";
+
+    div.innerHTML = `
+        <div class="msg-avatar"></div>
+
+        <div class="bubble">
+            Milo is typing...
+        </div>
+    `;
+
+    chatMessages.appendChild(div);
+
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function removeTyping() {
+
+    const t = document.getElementById("typing");
+
+    if (t) {
+
+        t.remove();
+
+    }
+
+}
+
+async function sendMessage() {
+
+    const text = userInput.value.trim();
+
+    if (!text) return;
+
+    renderMessage(text, "user");
+
+    userInput.value = "";
+
+    addTyping();
+
+    try {
+
+        const response = await fetch(
+
+            API_BASE + "/api/chat",
+
+            {
+
+                method: "POST",
+
+                headers: {
+
+                    "Content-Type": "application/json",
+
+                    "Authorization": "Bearer " + token
+
+                },
+
+                body: JSON.stringify({
+
+                    message: text
+
+                })
+
+            }
+
+        );
+
+        removeTyping();
+
+        if (response.status === 401) {
+
+            alert("Session expired.");
+
+            localStorage.clear();
+
+            location.href = "login.html";
+
+            return;
+
         }
 
-        chatMessages.appendChild(msgDiv);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
+        const data = await response.json();
+
+        renderMessage(data.response, "bot");
+
     }
 
-    // Toggle contextual drop-down menu visibility
-    function toggleActionMenu(button, event) {
-        event.stopPropagation();
-        document.querySelectorAll('.msg-action-menu').forEach(menu => {
-            if(menu !== button.nextElementSibling) menu.classList.remove('show');
-        });
-        button.nextElementSibling.classList.toggle('show');
+    catch (err) {
+
+        removeTyping();
+
+        renderMessage(
+
+            "Unable to connect to Milo.",
+
+            "bot"
+
+        );
+
+        console.log(err);
+
     }
 
-    /* --- REPORT MODULE CONFIG --- */
+}
 
-    function openReportForm(messageContent) {
-        flaggedMsgContext.value = messageContent; 
-        reportOverlay.classList.add('active');
-        document.querySelectorAll('.msg-action-menu').forEach(menu => menu.classList.remove('show'));
-    }
+function toggleActionMenu(button,event){
 
-    function closeReportForm() {
-        reportOverlay.classList.remove('active');
-        document.getElementById('issueType').selectedIndex = 0;
-        document.getElementById('issueNotes').value = '';
-        flaggedMsgContext.value = '';
-    }
+    event.stopPropagation();
 
-    function submitReportForm() {
-        const originalAIResponse = flaggedMsgContext.value;
-        const chosenCategory = document.getElementById('issueType').value;
-        const detailedNotes = document.getElementById('issueNotes').value.trim();
+    document
 
-        const reportPayload = {
-            aiResponse: originalAIResponse,
-            category: chosenCategory,
-            notes: detailedNotes || "No notes provided.",
-            timestamp: new Date().toISOString()
-        };
+        .querySelectorAll(".msg-action-menu")
 
-        console.log("Logged Report Data Object: ", reportPayload);
-        alert(`Thank you! Your issue has been logged.\nCategory: ${chosenCategory}`);
-        closeReportForm();
-    }
+        .forEach(
 
-    window.addEventListener('click', function() {
-        document.querySelectorAll('.msg-action-menu').forEach(menu => menu.classList.remove('show'));
-    });
+            menu=>{
 
-    // Simple Automated Mock Dialog Engine
-    function simulateAiReply(userText) {
-        let reply = "Okay, can you please tell me more details about that?";
-        const lowerText = userText.toLowerCase();
+                if(menu!==button.nextElementSibling)
 
-        if (lowerText.includes('hello') || lowerText.includes('hi')) {
-            reply = "Hello! I am Milo. What can I assist you with today?";
-        } else if (lowerText.includes('login')) {
-            reply = "Okay, can you please tell me what specific error message you are seeing?";
-        } else if (lowerText.includes('password')) {
-            reply = "You can reset your password by clicking on 'Forgot Password' on the login window.";
-        }
+                    menu.classList.remove("show");
 
-        renderMessage(reply, 'bot');
-    }
+            }
+
+        );
+
+    button
+
+        .nextElementSibling
+
+        .classList
+
+        .toggle("show");
+
+}
+
+function openReportForm(message){
+
+    flaggedMsgContext.value = message;
+
+    reportOverlay.classList.add("active");
+
+}
+
+function closeReportForm(){
+
+    reportOverlay.classList.remove("active");
+
+    document.getElementById("issueType").selectedIndex=0;
+
+    document.getElementById("issueNotes").value="";
+
+}
+
+function submitReportForm(){
+
+    alert("Report submitted successfully.");
+
+    closeReportForm();
+
+}
+
+window.onclick=function(){
+
+    document
+
+    .querySelectorAll(".msg-action-menu")
+
+    .forEach(
+
+        m=>m.classList.remove("show")
+
+    );
+
+};
 </script>
 </body>
 </html>

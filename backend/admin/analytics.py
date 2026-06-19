@@ -63,3 +63,95 @@ def analytics():
         "complaints": complaints
 
     }
+
+@router.get("/admin/loan-summary")
+
+def loan_summary():
+
+    conn = get_db_connection()
+
+    cursor = conn.cursor()
+
+    cursor.execute("""
+
+        SELECT
+
+            L_TYPE,
+
+            COUNT(*)
+
+        FROM LOANS
+
+        GROUP BY L_TYPE
+
+    """)
+
+    rows = cursor.fetchall()
+
+    cursor.close()
+
+    conn.close()
+
+    return rows
+
+@router.get("/admin/complaint-summary")
+
+def complaint_summary():
+
+    conn = get_db_connection()
+
+    cursor = conn.cursor()
+
+    cursor.execute("""
+
+        SELECT
+
+            STATUS,
+
+            COUNT(*)
+
+        FROM COMPLAINTS
+
+        GROUP BY STATUS
+
+    """)
+
+    rows = cursor.fetchall()
+
+    cursor.close()
+
+    conn.close()
+
+    return rows
+
+@router.get("/admin/chat-daily")
+
+def chat_daily():
+
+    conn = get_db_connection()
+
+    cursor = conn.cursor()
+
+    cursor.execute("""
+
+        SELECT
+
+            TRUNC(TIMESTAMP),
+
+            COUNT(*)
+
+        FROM CHAT_MSGS
+
+        GROUP BY TRUNC(TIMESTAMP)
+
+        ORDER BY TRUNC(TIMESTAMP)
+
+    """)
+
+    rows = cursor.fetchall()
+
+    cursor.close()
+
+    conn.close()
+
+    return rows
