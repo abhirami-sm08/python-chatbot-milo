@@ -1,8 +1,9 @@
 import os
-
+from pathlib import Path
 from dotenv import load_dotenv
 
-load_dotenv()
+env_path = Path(__file__).parent / ".env"
+load_dotenv(dotenv_path=env_path)
 
 
 class Settings:
@@ -11,17 +12,17 @@ class Settings:
     # Oracle Database
     # -------------------------
 
-    DB_USER = os.getenv("DB_USER")
+    DB_USER = os.getenv("ORACLE_DB_USER")
 
-    DB_PASSWORD = os.getenv("DB_PASSWORD")
+    DB_PASSWORD = os.getenv("ORACLE_DB_PASSWORD")
 
-    DB_DSN = os.getenv("DB_DSN")
+    DB_DSN = os.getenv("ORACLE_DB_DSN")
 
     # -------------------------
     # JWT
     # -------------------------
 
-    SECRET_KEY = os.getenv("SECRET_KEY")
+    SECRET_KEY = os.getenv("JWT_SECRET_KEY", "muthoot_fincorp_chatbot_2026")
 
     ALGORITHM = "HS256"
 

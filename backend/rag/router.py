@@ -8,7 +8,13 @@ SQL_INTENTS = {
 
     "payment_history": get_payment_history,
 
-    "complaint_status": get_complaint_status
+    "complaint_status": get_complaint_status,
+
+    "account_details": get_account_details,
+
+    "profile_details": get_customer_profile,
+
+    "loan_details": get_loan_details
 
 }
 
@@ -56,11 +62,61 @@ def route_query(
 
     faq_required = False
 
-    if intent in SQL_INTENTS:
-
-        sql_result = SQL_INTENTS[intent](customer_id)
-
     query = user_query.lower()
+
+    # -----------------------------------------
+    # EMI Intent
+    # -----------------------------------------
+
+    if intent == "emi_schedule":
+
+        next_keywords = [
+
+            "next",
+
+            "due",
+
+            "upcoming",
+
+            "latest",
+
+            "when",
+
+            "remaining"
+
+        ]
+
+        if any(
+
+            word in query
+
+            for word in next_keywords
+
+        ):
+
+            sql_result = get_next_emi(
+                customer_id
+            )
+
+        else:
+
+            sql_result = get_emi_schedule(
+                customer_id
+            )
+
+    # -----------------------------------------
+    # Other SQL Intents
+    # -----------------------------------------
+
+    elif intent in SQL_INTENTS:
+
+        sql_result = SQL_INTENTS[intent](
+            customer_id
+        )
+
+    # -----------------------------------------
+    # FAQ Detection
+    # -----------------------------------------
 
     if any(
 

@@ -7,19 +7,43 @@ model = SentenceTransformer(
 
 INTENTS = {
 
-    "loan_balance": [
+    "account_details": [
+        "account status",
+        "account details",
+        "my account",
+        "account number",
+        "branch code"
+    ],
 
+    "profile_details": [
+        "my profile",
+        "my details",
+        "customer profile",
+        "contact info",
+        "email address",
+        "phone number"
+    ],
+
+    "loan_details": [
+        "loan details",
+        "my loan",
+        "loan type",
+        "interest rate",
+        "tenure",
+        "principal amount"
+    ],
+
+    "loan_balance": [
         "loan balance",
         "remaining balance",
         "outstanding amount",
         "remaining loan",
-        "loan details",
-        "my loan",
         "balance amount",
         "loan status",
         "amount left",
-        "pending amount"
-
+        "pending amount",
+        "due amount",
+        "total due"
     ],
 
     "emi_schedule": [

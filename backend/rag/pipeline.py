@@ -33,38 +33,135 @@ vector_store.populate_from_file(
 
 def run_milo_rag(
     user_query: str,
-    customer_id: int
+    customer_id: int | None
 ) -> str:
 
     # ---------------------------------------------
-    # Step 1 : Semantic Intent Detection
+    # Step 1 : Previous Conversation
+    # ---------------------------------------------
+
+    history = ""
+    if customer_id is not None:
+        history = get_chat_history(
+            customer_id,
+            limit=8
+        )
+
+    # ---------------------------------------------
+    # Step 2 : Rewrite Follow-up Question
+    # ---------------------------------------------
+
+    try:
+
+        rewrite_prompt = f"""
+You are an AI assistant that rewrites follow-up customer questions into complete standalone questions.
+
+Conversation History:
+
+{history}
+
+Current Customer Question:
+
+{user_query}
+
+Instructions:
+
+- Use the conversation history.
+- Rewrite the current question into a complete standalone question.
+- If the question already makes sense, return it unchanged.
+- Never answer the question.
+- Return ONLY the rewritten question.
+
+Examples:
+
+Conversation:
+
+User: Show my EMI schedule.
+
+User: When is the next one due?
+
+Output:
+When is my next EMI due?
+
+-----------------------------------
+
+Conversation:
+
+User: Tell me about my loan.
+
+User: How much is left?
+
+Output:
+What is my remaining loan balance?
+
+-----------------------------------
+
+Conversation:
+
+User: Show my payment history.
+
+User: Which payment was the latest?
+
+Output:
+Show my latest payment history.
+
+-----------------------------------
+
+Conversation:
+
+User: I raised a complaint yesterday.
+
+User: What's its status?
+
+Output:
+What is the status of my complaint?
+
+"""
+
+        rewrite_response = client.models.generate_content(
+
+            model="gemini-2.5-flash",
+
+            contents=rewrite_prompt,
+
+            config=types.GenerateContentConfig(
+
+                temperature=0
+
+            )
+
+        )
+
+        rewritten_query = rewrite_response.text.strip()
+
+    except Exception:
+
+        rewritten_query = user_query
+
+    # ---------------------------------------------
+    # Step 3 : Semantic Intent Detection
     # ---------------------------------------------
 
     intent = classify_intent(
-        user_query
+        rewritten_query
     )
 
     # ---------------------------------------------
-    # Step 2 : Previous Conversation
+    # Step 4 : SQL Router
     # ---------------------------------------------
 
-    history = get_chat_history(
-        customer_id,
-        limit=8
-    )
+    structured_data = ""
+    faq_required = True
+
+    if customer_id is not None:
+        structured_data, faq_required = route_query(
+            intent,
+            rewritten_query,
+            customer_id
+        )
 
     # ---------------------------------------------
-    # Step 3 : SQL Router
-    # ---------------------------------------------
-
-    structured_data, faq_required = route_query(
-        intent,
-        user_query,
-        customer_id
-    )
-
-    # ---------------------------------------------
-    # Step 4 : SQL Only
+    # Step 5 : SQL Only
     # ---------------------------------------------
 
     if structured_data and not faq_required:
@@ -75,7 +172,7 @@ def run_milo_rag(
         )
 
     # ---------------------------------------------
-    # Step 5 : FAQ Semantic Search
+    # Step 6 : FAQ Semantic Search
     # ---------------------------------------------
 
     faq_context = ""
@@ -83,72 +180,86 @@ def run_milo_rag(
     if faq_required:
 
         faq_context = vector_store.semantic_search(
-            user_query,
+
+            rewritten_query,
+
             top_k=3
+
         )
 
     # ---------------------------------------------
-    # Step 6 : Prompt
+    # Step 7 : Build Prompt
     # ---------------------------------------------
 
     prompt = f"""
 You are Milo, the AI Assistant for Muthoot Fincorp.
 
-You help customers regarding loans, EMI, complaints,
-payments and company policies.
+You help customers with:
+
+• Loan information
+• EMI details
+• Payment history
+• Complaint status
+• Gold loan policies
+• Company procedures
+
+==================================================
 
 RULES
 
 1. Continue the conversation naturally.
 
-2. Use DATABASE information whenever available.
+2. Always use DATABASE information whenever available.
 
-3. DATABASE information is always correct.
+3. DATABASE information is always correct. You have full access to the user's secure database information. Answer their questions directly and provide specific amounts, dates, and details using this data without citing privacy or security concerns.
 
-4. FAQ information should only be used for explaining
-company policies, eligibility, documents, interest,
-gold loans and procedures.
+4. FAQ information should only explain
+company policies, eligibility, documents,
+gold loans, repayment methods,
+interest rates and procedures.
 
 5. Never invent customer information.
 
-6. If DATABASE and FAQ are both available,
-combine them into one natural answer.
+6. If both DATABASE and FAQ information
+are available, combine both into one
+natural answer.
 
 7. If information is unavailable,
 politely ask the customer to contact
 Muthoot Fincorp Customer Support.
 
-----------------------------------------
+==================================================
 
 Conversation History
 
 {history}
 
-----------------------------------------
+==================================================
 
 Database Information
 
 {structured_data}
 
-----------------------------------------
+==================================================
 
 FAQ Information
 
 {faq_context}
 
-----------------------------------------
+==================================================
 
 Customer Question
 
-{user_query}
+{rewritten_query}
 
-----------------------------------------
+==================================================
 
-Answer as Milo.
+Answer as Milo in a professional,
+friendly and concise manner.
 """
-
+    
     # ---------------------------------------------
-    # Step 7 : Gemini
+    # Step 8 : Gemini Response
     # ---------------------------------------------
 
     try:
@@ -169,9 +280,21 @@ Answer as Milo.
 
         )
 
-        return response.text
+        if (
+            response is not None
+            and response.text is not None
+        ):
+
+            return response.text.strip()
+
+        return (
+            "I'm sorry, I couldn't generate a response "
+            "at the moment."
+        )
 
     except Exception as e:
+
+        print(f"Pipeline Error: {e}")
 
         return (
             "Unable to generate response.\n"
