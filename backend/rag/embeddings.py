@@ -1,1 +1,0 @@
-# This module has been removed — its functionality was unused/duplicated.
