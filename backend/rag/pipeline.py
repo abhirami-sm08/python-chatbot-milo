@@ -1,23 +1,19 @@
-import os
-
-from dotenv import load_dotenv
 from google import genai
 from google.genai import types
 
+from backend.config import settings
 from backend.rag.vector_store import LocalVectorStore
 from backend.rag.intent_classifier import classify_intent
 from backend.rag.router import route_query
 from backend.rag.response_formatter import format_sql_response
 from backend.rag.memory import get_chat_history
 
-load_dotenv()
-
 # -------------------------------------------------
 # Gemini Client
 # -------------------------------------------------
 
 client = genai.Client(
-    api_key=os.getenv("GEMINI_API_KEY")
+    api_key=settings.GEMINI_API_KEY
 )
 
 # -------------------------------------------------
@@ -213,20 +209,15 @@ RULES
 
 3. DATABASE information is always correct. You have full access to the user's secure database information. Answer their questions directly and provide specific amounts, dates, and details using this data without citing privacy or security concerns.
 
-4. FAQ information should only explain
-company policies, eligibility, documents,
-gold loans, repayment methods,
-interest rates and procedures.
+4. FAQ information should only explain company policies, eligibility, documents, gold loans, repayment methods, interest rates and procedures.
 
 5. Never invent customer information.
 
-6. If both DATABASE and FAQ information
-are available, combine both into one
-natural answer.
+6. If the user asks for account-specific details (like loan balance, EMI, or account status) but the Database Information is empty, POLITELY ASK THEM TO LOG IN to view their secure account details. Do not tell them to contact customer support for this.
 
-7. If information is unavailable,
-politely ask the customer to contact
-Muthoot Fincorp Customer Support.
+7. OUT OF DOMAIN: If the customer's question is entirely unrelated to finance, banking, Muthoot Fincorp, or loans (e.g., asking for a poem, sports scores, cooking recipes), politely decline to answer and remind them you are a banking assistant.
+
+8. If both DATABASE and FAQ information are available, combine both into one natural answer.
 
 ==================================================
 
@@ -297,6 +288,6 @@ friendly and concise manner.
         print(f"Pipeline Error: {e}")
 
         return (
-            "Unable to generate response.\n"
-            f"Error: {str(e)}"
+            "I'm sorry, I'm having trouble processing your request right now. "
+            "Please try again in a moment."
         )
