@@ -1,13 +1,11 @@
 import os
 import numpy as np
-import google.generativeai as genai
+from google import genai
 from dotenv import load_dotenv
 
 load_dotenv()
 
-genai.configure(
-    api_key=os.getenv("GEMINI_API_KEY")
-)
+client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 
 class LocalVectorStore:
@@ -61,17 +59,13 @@ KYC verification is mandatory before loan approval.
 
             try:
 
-                response = genai.embed_content(
-                    model="models/text-embedding-004",
-                    content=paragraph,
-                    task_type="retrieval_document"
+                response = client.models.embed_content(
+                    model="gemini-embedding-2",
+                    contents=paragraph,
+                    config={"task_type": "RETRIEVAL_DOCUMENT"}
                 )
 
-                embedding = (
-                    response["embedding"]
-                    if isinstance(response, dict)
-                    else response.embedding
-                )
+                embedding = response.embeddings[0].values
 
                 self.chunks.append(paragraph)
                 self.embeddings.append(embedding)
@@ -91,17 +85,13 @@ KYC verification is mandatory before loan approval.
 
         try:
 
-            response = genai.embed_content(
-                model="models/text-embedding-004",
-                content=query,
-                task_type="retrieval_query"
+            response = client.models.embed_content(
+                model="gemini-embedding-2",
+                contents=query,
+                config={"task_type": "RETRIEVAL_QUERY"}
             )
 
-            query_embedding = (
-                response["embedding"]
-                if isinstance(response, dict)
-                else response.embedding
-            )
+            query_embedding = response.embeddings[0].values
 
             scores = []
 

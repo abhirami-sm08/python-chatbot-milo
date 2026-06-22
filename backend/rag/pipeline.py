@@ -1,7 +1,7 @@
 import os
 
 from dotenv import load_dotenv
-import google.generativeai as genai
+from google import genai
 
 from backend.rag.vector_store import LocalVectorStore
 from backend.rag.router import route_query
@@ -21,13 +21,7 @@ load_dotenv()
 # Gemini Configuration
 # ----------------------------
 
-genai.configure(
-    api_key=os.getenv("GEMINI_API_KEY")
-)
-
-model = genai.GenerativeModel(
-    "gemini-2.5-flash"
-)
+client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 # ----------------------------
 # Load Vector Store
@@ -47,8 +41,9 @@ def generate_response(prompt: str):
 
     try:
 
-        response = model.generate_content(
-            prompt
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt
         )
 
         return response.text
