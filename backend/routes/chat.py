@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from backend.models.schemas import ChatRequest, ChatResponse
-from backend.auth import get_current_user
+from backend.auth import get_optional_user
 from backend.rag.pipeline import run_milo_rag
 from backend.database import get_db_connection
 
@@ -68,7 +68,7 @@ def save_chat_message(
 )
 def chat_endpoint(
     payload: ChatRequest,
-    customer_id: int = Depends(get_current_user)
+    customer_id: int | None = Depends(get_optional_user)
 ):
 
     user_message = payload.message
@@ -83,24 +83,26 @@ def chat_endpoint(
             "For security reasons, never share passwords, PINs, OTPs or CVV numbers."
         }
 
-    save_chat_message(
-        customer_id,
-        "USER",
-        user_message,
-        "CHAT"
-    )
+    if customer_id is not None:
+        save_chat_message(
+            customer_id,
+            "USER",
+            user_message,
+            "CHAT"
+        )
 
     ai_response = run_milo_rag(
         user_message,
         customer_id
     )
 
-    save_chat_message(
-        customer_id,
-        "BOT",
-        ai_response,
-        "CHAT"
-    )
+    if customer_id is not None:
+        save_chat_message(
+            customer_id,
+            "BOT",
+            ai_response,
+            "CHAT"
+        )
 
     return {
         "response": ai_response

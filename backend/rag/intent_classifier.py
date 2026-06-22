@@ -1,158 +1,140 @@
-import re
+from sentence_transformers import SentenceTransformer
+import numpy as np
 
-SQL_INTENTS = {
+model = SentenceTransformer(
+    "all-MiniLM-L6-v2"
+)
 
-    "loan_balance": [
-        "loan balance",
-        "outstanding balance",
-        "remaining balance",
-        "balance amount",
-        "amount remaining",
-        "pending balance",
-        "balance left"
+INTENTS = {
+
+    "account_details": [
+        "account status",
+        "account details",
+        "my account",
+        "account number",
+        "branch code"
+    ],
+
+    "profile_details": [
+        "my profile",
+        "my details",
+        "customer profile",
+        "contact info",
+        "email address",
+        "phone number"
     ],
 
     "loan_details": [
-        "my loan",
         "loan details",
-        "loan status",
-        "interest rate",
+        "my loan",
         "loan type",
-        "principal",
-        "tenure"
+        "interest rate",
+        "tenure",
+        "principal amount"
     ],
 
-    "emi": [
-        "emi",
-        "installment",
-        "due date",
+    "loan_balance": [
+        "loan balance",
+        "remaining balance",
+        "outstanding amount",
+        "remaining loan",
+        "balance amount",
+        "loan status",
+        "amount left",
+        "pending amount",
+        "due amount",
+        "total due"
+    ],
+
+    "emi_schedule": [
+
+        "emi schedule",
         "next emi",
-        "monthly payment",
-        "repayment schedule"
+        "emi details",
+        "emi due",
+        "upcoming emi",
+        "installments",
+        "payment schedule"
+
     ],
 
     "payment_history": [
-        "payment",
+
         "payment history",
-        "transaction",
+        "previous payments",
         "transactions",
-        "paid amount",
-        "recent payment"
+        "paid emi",
+        "payment details",
+        "recent payments"
+
     ],
 
-    "account_details": [
-        "account",
-        "account details",
-        "account number",
+    "complaint_status": [
+
+        "complaint status",
+        "track complaint",
+        "my complaint",
+        "complaint progress",
+        "ticket status"
+
+    ],
+
+    "faq": [
+
+        "gold loan",
+        "interest rate",
+        "kyc",
+        "eligibility",
+        "documents",
         "branch",
-        "branch code",
-        "account type"
-    ],
+        "customer support",
+        "loan process"
 
-    "customer_profile": [
-        "profile",
-        "customer details",
-        "my details",
-        "phone",
-        "mobile",
-        "email",
-        "contact details"
-    ],
-
-    "complaint": [
-        "complaint",
-        "complaints",
-        "ticket",
-        "issue",
-        "grievance"
     ]
+
 }
 
+intent_vectors = {}
 
-GENERAL_PATTERNS = [
+for intent, examples in INTENTS.items():
 
-    "what is",
-    "how to",
-    "how do",
-    "how can",
-    "why",
-    "benefits",
-    "features",
-    "advantages",
-    "eligibility",
-    "documents",
-    "gold loan",
-    "personal loan",
-    "education loan",
-    "home loan",
-    "vehicle loan",
-    "policy",
-    "interest calculation",
-    "processing fee"
-]
-
-
-def clean_query(query: str):
-
-    query = query.lower()
-
-    query = re.sub(
-        r"[^\w\s]",
-        "",
-        query
+    embeddings = model.encode(
+        examples,
+        normalize_embeddings=True
     )
 
-    return query.strip()
+    intent_vectors[intent] = np.mean(
+        embeddings,
+        axis=0
+    )
 
 
-def classify_intent(query: str):
+def classify_intent(
+    query: str
+):
 
-    query = clean_query(query)
+    query_embedding = model.encode(
+        query,
+        normalize_embeddings=True
+    )
 
-    # ---------- SQL ----------
+    best_intent = "faq"
+    best_score = -1
 
-    for intent, keywords in SQL_INTENTS.items():
+    for intent, vector in intent_vectors.items():
 
-        for keyword in keywords:
+        similarity = np.dot(
+            query_embedding,
+            vector
+        )
 
-            if keyword in query:
+        if similarity > best_score:
 
-                return intent
+            best_score = similarity
+            best_intent = intent
 
-    # ---------- Personal Query ----------
+    if best_score < 0.45:
 
-    if (
-        "my " in query
-        or "me " in query
-    ):
+        return "faq"
 
-        if "loan" in query:
-            return "loan_details"
-
-        if "balance" in query:
-            return "loan_balance"
-
-        if "emi" in query:
-            return "emi"
-
-        if "payment" in query:
-            return "payment_history"
-
-        if "account" in query:
-            return "account_details"
-
-        if "profile" in query:
-            return "customer_profile"
-
-        if "complaint" in query:
-            return "complaint"
-
-    # ---------- FAQ ----------
-
-    for pattern in GENERAL_PATTERNS:
-
-        if pattern in query:
-
-            return "faq"
-
-    return "faq"
+    return best_intent

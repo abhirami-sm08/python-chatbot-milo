@@ -167,6 +167,49 @@ def get_emi_schedule(customer_id: int):
         cursor.close()
         conn.close()
 
+
+def get_next_emi(customer_id: int):
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+
+        cursor.execute("""
+            SELECT
+                e.EMI_NO,
+                e.DUE_DATE,
+                e.EMI_AMT,
+                e.STATUS
+            FROM EMI_SCHEDULE e
+            JOIN LOANS l
+                ON e.L_ID = l.L_ID
+            WHERE l.C_ID = :1
+              AND UPPER(e.STATUS) <> 'PAID'
+            ORDER BY e.DUE_DATE
+            FETCH FIRST 1 ROW ONLY
+        """, (customer_id,))
+
+        row = cursor.fetchone()
+
+        if not row:
+            return "You have no upcoming EMI."
+
+        emi_no, due_date, amount, status = row
+
+        return (
+            f"Your next EMI is:\n\n"
+            f"EMI No   : {emi_no}\n"
+            f"Due Date : {due_date}\n"
+            f"Amount   : ₹{amount:,.2f}\n"
+            f"Status   : {status}"
+        )
+
+    finally:
+        cursor.close()
+        conn.close()
+
+
 def get_payment_history(customer_id: int):
 
     conn = get_db_connection()

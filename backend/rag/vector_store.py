@@ -1,20 +1,31 @@
 import os
+import faiss
 import numpy as np
-from google import genai
+import google.generativeai as genai
 from dotenv import load_dotenv
 
 load_dotenv()
 
-client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+genai.configure(
+    api_key=os.getenv("GEMINI_API_KEY")
+)
 
 
 class LocalVectorStore:
 
-    def __init__(self):
-        self.chunks = []
-        self.embeddings = []
+    def __init__(self): 
 
-    def populate_from_file(self, filepath: str):
+        self.model = SentenceTransformer(
+            "all-MiniLM-L6-v2"
+        )
+
+        self.index = None
+        self.documents = []
+
+    def populate_from_file(
+        self,
+        filepath: str
+    ):
 
         if not os.path.exists(filepath):
 
@@ -29,7 +40,8 @@ class LocalVectorStore:
                 encoding="utf-8"
             ) as f:
 
-                f.write("""
+                f.write(
+"""
 Muthoot Gold Loan Policy
 
 Gold loans are available against eligible gold ornaments.
@@ -41,15 +53,35 @@ Interest rates start from 9.5%.
 Customers can repay through UPI, Net Banking, Cash and Branch Payments.
 
 KYC verification is mandatory before loan approval.
-""")
 
-        with open(filepath, "r", encoding="utf-8") as f:
+Gold purity must generally be 18K or above.
+
+Loans are subject to verification and approval.
+
+Customers may close loans early without restrictions depending on the loan scheme.
+
+EMI reminders are sent through SMS.
+
+For assistance contact Muthoot Fincorp Customer Support.
+"""
+                )
+
+        with open(
+            filepath,
+            "r",
+            encoding="utf-8"
+        ) as f:
+
             text = f.read()
 
-        paragraphs = [
-            p.strip()
-            for p in text.split("\n\n")
-            if p.strip()
+        chunks = [
+
+            chunk.strip()
+
+            for chunk in text.split("\n\n")
+
+            if chunk.strip()
+
         ]
 
         self.chunks.clear()
@@ -59,13 +91,17 @@ KYC verification is mandatory before loan approval.
 
             try:
 
-                response = client.models.embed_content(
-                    model="gemini-embedding-2",
-                    contents=paragraph,
-                    config={"task_type": "RETRIEVAL_DOCUMENT"}
+                response = genai.embed_content(
+                    model="models/text-embedding-004",
+                    content=paragraph,
+                    task_type="retrieval_document"
                 )
 
-                embedding = response.embeddings[0].values
+                embedding = (
+                    response["embedding"]
+                    if isinstance(response, dict)
+                    else response.embedding
+                )
 
                 self.chunks.append(paragraph)
                 self.embeddings.append(embedding)
@@ -77,21 +113,26 @@ KYC verification is mandatory before loan approval.
     def semantic_search(
         self,
         query: str,
-        top_k: int = 2
-    ) -> str:
+        top_k: int = 3
+    ):
 
-        if not self.embeddings:
+        if self.index is None:
+
             return ""
 
         try:
 
-            response = client.models.embed_content(
-                model="gemini-embedding-2",
-                contents=query,
-                config={"task_type": "RETRIEVAL_QUERY"}
+            response = genai.embed_content(
+                model="models/text-embedding-004",
+                content=query,
+                task_type="retrieval_query"
             )
 
-            query_embedding = response.embeddings[0].values
+            query_embedding = (
+                response["embedding"]
+                if isinstance(response, dict)
+                else response.embedding
+            )
 
             scores = []
 

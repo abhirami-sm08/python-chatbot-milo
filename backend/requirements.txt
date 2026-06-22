@@ -3,6 +3,8 @@ uvicorn
 oracledb
 python-dotenv
 python-jose
-google-genai
+google-generativeai
 numpy
 email-validator
+sentence-transformers
+faiss-cpu
