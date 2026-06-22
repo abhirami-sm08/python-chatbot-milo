@@ -2,7 +2,9 @@ fastapi
 uvicorn
 oracledb
 python-dotenv
-python-jose
-google-generativeai
+python-jose[cryptography]
+google-genai
 numpy
 email-validator
+sentence-transformers
+faiss-cpu

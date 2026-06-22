@@ -706,6 +706,7 @@
     }
   </style>
 </head>
+
 <body>
 
 <!-- ════════════════════ TOP BAR ════════════════════ -->
@@ -866,107 +867,6 @@
       </button>
     </div>
     
-    <!-- ── TAB: Mobile OTP ── 
-    <div class="form-section" id="section-mobile">
-      <div class="field">
-        <div class="field-label">
-          <label for="mobileInput">Registered Mobile Number <span class="req">*</span></label>
-        </div>
-        <div class="input-wrap">
-          <svg class="input-prefix-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/>
-          </svg>
-          <input type="tel" id="mobileInput" maxlength="10"
-            placeholder="10-digit mobile number" class="has-suffix">
-          <button class="input-suffix-btn" onclick="sendOTP()" id="sendOTPBtn" title="Send OTP">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-              <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
-            </svg>
-          </button>
-        </div>
-        <div class="field-error" id="mobileError">
-          <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-          </svg>
-          <span id="mobileErrorMsg">Please enter a valid 10-digit mobile number.</span>
-        </div>
-        <p class="field-hint">OTP will be sent to your Muthoot-registered number.</p>
-      </div>
-
-      <button class="btn-submit" id="btnMobile" onclick="handleMobileSubmit()">
-        <span class="btn-label">Send OTP</span>
-        <div class="spinner" id="spinnerMobile"></div>
-        <svg id="arrowMobile" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-          <path d="M5 12h14M12 5l7 7-7 7"/>
-        </svg>
-      </button>
-    </div>
--->
-    <!-- ── TAB: Password ── 
-    <div class="form-section" id="section-password">
-      <div class="field">
-        <div class="field-label">
-          <label for="userIdInput">Customer ID / Mobile <span class="req">*</span></label>
-        </div>
-        <div class="input-wrap">
-          <svg class="input-prefix-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-          </svg>
-          <input type="text" id="userIdInput" placeholder="MFC000123456 or mobile number">
-        </div>
-        <div class="field-error" id="userIdError">
-          <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-          </svg>
-          <span>Please enter your Customer ID or mobile number.</span>
-        </div>
-      </div>
-
-      <div class="field">
-        <div class="field-label">
-          <label for="passwordInput">Password <span class="req">*</span></label>
-          <a class="field-link" onclick="showForgotModal()">Forgot Password?</a>
-        </div>
-        <div class="input-wrap">
-          <svg class="input-prefix-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-          </svg>
-          <input type="password" id="passwordInput" placeholder="Enter your password" class="has-suffix">
-          <button class="input-suffix-btn" id="togglePass" onclick="togglePassword()" title="Show / hide password">
-            <svg id="eyeIcon" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-            </svg>
-          </button>
-        </div>
-        <div class="strength-meter" id="strengthMeter">
-          <div class="strength-bar" id="sb1"></div>
-          <div class="strength-bar" id="sb2"></div>
-          <div class="strength-bar" id="sb3"></div>
-          <div class="strength-bar" id="sb4"></div>
-        </div>
-        <div class="strength-text" id="strengthText"></div>
-        <div class="field-error" id="passError">
-          <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-          </svg>
-          <span id="passErrorMsg">Please enter your password.</span>
-        </div>
-      </div>
-
-      <div class="checkbox-row">
-        <input type="checkbox" id="rememberPass">
-        <label for="rememberPass">Keep me signed in</label>
-      </div>
-
-      <button class="btn-submit" id="btnPass" onclick="handlePasswordSubmit()">
-        <span class="btn-label">Sign In</span>
-        <div class="spinner" id="spinnerPass"></div>
-        <svg id="arrowPass" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-          <path d="M5 12h14M12 5l7 7-7 7"/>
-        </svg>
-      </button>
-    </div>
--->
     <!-- Bottom links -->
     <div class="bottom-links">
       <p class="bottom-link">
@@ -1062,311 +962,222 @@
 
 <!-- ════════════════════ JAVASCRIPT ════════════════════ -->
 <script>
-/* ───── STATE ───── */
-let currentTab  = 'cun';
-let otpTimer    = null;
-let otpSeconds  = 30;
-let mobileNum   = '';
+  const API_BASE = "";
 
-/* ───── TOPBAR TABS ───── */
-document.querySelectorAll('.topbar-left a').forEach(a => {
-  a.addEventListener('click', e => {
-    e.preventDefault();
-    document.querySelectorAll('.topbar-left a').forEach(x => x.classList.remove('active'));
-    a.classList.add('active');
-    showToast('info','Portal Switched','Switched to ' + a.textContent + ' portal');
-  });
-});
+  /* ─────────────────────────────────────────────────────
+   *  MAIN LOGIN HANDLER  (called by the Continue button)
+   * ───────────────────────────────────────────────────── */
+  async function handleCUNSubmit() {
 
-/* ───── SEARCH TOGGLE ───── */
-document.getElementById('searchToggle').addEventListener('click', () => {
-  showToast('info','Search','Search functionality coming soon.');
-});
+    /* 1. Read the CORRECT input IDs from the DOM */
+    const unid     = document.getElementById("cunInput").value.trim();
+    const password = document.getElementById("passwordInput").value.trim();
 
-/* ───── LOGIN TAB SWITCHER ───── */
-function switchTab(tab) {
-  currentTab = tab;
-  ['cun','mobile','password'].forEach(t => {
-    document.getElementById('section-' + t).classList.remove('visible');
-    document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1).replace(/^\w/, c=>c.toUpperCase()))?.classList.remove('active');
-  });
-  document.getElementById('tabCUN').classList.remove('active');
-  document.getElementById('tabMob').classList.remove('active');
-  document.getElementById('tabPass').classList.remove('active');
+    /* 2. Client-side validation using the existing error UI */
+    let isValid = true;
 
-  document.getElementById('section-' + tab).classList.add('visible');
-  const map = { cun:'tabCUN', mobile:'tabMob', password:'tabPass' };
-  document.getElementById(map[tab]).classList.add('active');
-  updateProgress();
-  clearAllErrors();
-}
-
-/* ───── PROGRESS BAR ───── */
-function updateProgress() {
-  const map = { cun: 33, mobile: 66, password: 100 };
-  document.getElementById('progressFill').style.width = (map[currentTab] || 33) + '%';
-}
-updateProgress();
-
-/* ───── CHARACTER COUNTER ───── */
-const cunInput   = document.getElementById('cunInput');
-const cunCounter = document.getElementById('cunCounter');
-cunInput.addEventListener('input', () => {
-  const len = cunInput.value.length;
-  cunCounter.textContent = len + ' / 20';
-  if (len > 0) clearError('cun');
-  if (len >= 8) cunInput.classList.add('success'); else cunInput.classList.remove('success');
-});
-
-/* ───── PASSWORD STRENGTH ───── */
-document.getElementById('passwordInput').addEventListener('input', () => {
-  const v = document.getElementById('passwordInput').value;
-  clearError('pass');
-  let score = 0;
-  if (v.length >= 8)            score++;
-  if (/[A-Z]/.test(v))         score++;
-  if (/[0-9]/.test(v))         score++;
-  if (/[^A-Za-z0-9]/.test(v))  score++;
-  const bars  = ['sb1','sb2','sb3','sb4'];
-  const labels = ['','Weak','Medium','Strong','Very Strong'];
-  const cls    = ['','weak','medium','strong','strong'];
-  bars.forEach((id, i) => {
-    const el = document.getElementById(id);
-    el.className = 'strength-bar';
-    if (i < score) el.classList.add(cls[score]);
-  });
-  document.getElementById('strengthText').textContent = v.length ? labels[score] : '';
-});
-
-/* ───── TOGGLE PASSWORD ───── */
-function togglePassword() {
-  const inp = document.getElementById('passwordInput');
-  const icon = document.getElementById('eyeIcon');
-  if (inp.type === 'password') {
-    inp.type = 'text';
-    icon.innerHTML = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>`;
-  } else {
-    inp.type = 'password';
-    icon.innerHTML = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`;
-  }
-}
-
-/* ───── VALIDATION HELPERS ───── */
-function showError(id, msg) {
-  const err = document.getElementById(id + 'Error');
-  if (msg && document.getElementById(id + 'ErrorMsg'))
-    document.getElementById(id + 'ErrorMsg').textContent = msg;
-  err?.classList.add('visible');
-  const inp = document.getElementById(id + 'Input') || document.getElementById(id + 'Inp');
-  inp?.classList.add('error');
-}
-function clearError(id) {
-  document.getElementById(id + 'Error')?.classList.remove('visible');
-  const inp = document.getElementById(id + 'Input') || document.getElementById(id + 'Inp');
-  inp?.classList.remove('error');
-}
-function clearAllErrors() {
-  ['cun','mobile','userId','pass','otp'].forEach(clearError);
-}
-
-/* ───── LOADING STATE ───── */
-function setLoading(btnId, spinnerId, arrowId, loading) {
-  const btn     = document.getElementById(btnId);
-  const spinner = document.getElementById(spinnerId);
-  const arrow   = arrowId ? document.getElementById(arrowId) : null;
-  btn.disabled = loading;
-  spinner.style.display = loading ? 'block' : 'none';
-  if (arrow) arrow.style.display = loading ? 'none' : 'block';
-}
-
-/* ───── SUBMIT HANDLERS ───── */
-function handleCUNSubmit() {
-  const val = cunInput.value.trim();
-  if (!val) { showError('cun','Please enter your Customer Unique Number.'); return; }
-  if (val.length < 6) { showError('cun','Customer ID must be at least 6 characters.'); return; }
-  clearError('cun');
-  setLoading('btnCUN','spinnerCUN','arrowCUN', true);
-  setTimeout(() => {
-    setLoading('btnCUN','spinnerCUN','arrowCUN', false);
-    showToast('success','Verified!','Customer ID found. Please complete sign-in.');
-  }, 1800);
-}
-
-function handleMobileSubmit() {
-  const val = document.getElementById('mobileInput').value.trim();
-  if (!/^[6-9]\d{9}$/.test(val)) {
-    showError('mobile','Enter a valid 10-digit Indian mobile number.');
-    return;
-  }
-  clearError('mobile');
-  mobileNum = val;
-  setLoading('btnMobile','spinnerMobile','arrowMobile', true);
-  setTimeout(() => {
-    setLoading('btnMobile','spinnerMobile','arrowMobile', false);
-    openOTPModal(val);
-  }, 1200);
-}
-
-function sendOTP() {
-  const val = document.getElementById('mobileInput').value.trim();
-  if (!/^[6-9]\d{9}$/.test(val)) {
-    showError('mobile','Enter a valid 10-digit mobile number first.');
-    return;
-  }
-  showToast('info','OTP Sent','OTP dispatched to +91 ' + val.slice(-4).padStart(10,'*'));
-}
-
-function handlePasswordSubmit() {
-  const uid  = document.getElementById('userIdInput').value.trim();
-  const pass = document.getElementById('passwordInput').value;
-  let ok = true;
-  if (!uid) { showError('userId','Please enter your Customer ID or mobile number.'); ok = false; }
-  if (!pass) { showError('pass','Please enter your password.'); ok = false; }
-  if (!ok) return;
-  setLoading('btnPass','spinnerPass','arrowPass', true);
-  setTimeout(() => {
-    setLoading('btnPass','spinnerPass','arrowPass', false);
-    showToast('success','Signed In','Welcome back! Redirecting to your dashboard…');
-    setTimeout(() => showToast('info','Dashboard','This is a demo — no redirect in preview mode.'), 1800);
-  }, 2000);
-}
-
-/* ───── OTP MODAL ───── */
-function openOTPModal(num) {
-  mobileNum = num;
-  document.getElementById('maskedPhone').textContent = '+91 ' + num.replace(/(\d{2})\d{6}(\d{2})/,'$1xxxxxx$2');
-  clearOTPBoxes();
-  document.getElementById('otpError').classList.remove('visible');
-  document.getElementById('otpModal').classList.add('open');
-  startOTPTimer();
-  setTimeout(() => document.getElementById('otp0').focus(), 200);
-}
-function closeOTPModal() {
-  document.getElementById('otpModal').classList.remove('open');
-  clearInterval(otpTimer);
-}
-function clearOTPBoxes() {
-  for (let i = 0; i < 6; i++) {
-    const el = document.getElementById('otp' + i);
-    el.value = '';
-    el.classList.remove('error','success');
-  }
-}
-function startOTPTimer() {
-  clearInterval(otpTimer);
-  otpSeconds = 30;
-  document.getElementById('resendBtn').disabled = true;
-  updateOTPTimer();
-  otpTimer = setInterval(() => {
-    otpSeconds--;
-    updateOTPTimer();
-    if (otpSeconds <= 0) {
-      clearInterval(otpTimer);
-      document.getElementById('resendBtn').disabled = false;
-    }
-  }, 1000);
-}
-function updateOTPTimer() {
-  document.getElementById('otpTimerText').textContent = otpSeconds > 0 ? otpSeconds + 's' : '0s';
-}
-function resendOTP() {
-  clearOTPBoxes();
-  document.getElementById('otpError').classList.remove('visible');
-  startOTPTimer();
-  showToast('info','OTP Resent','A new OTP has been sent to your mobile.');
-}
-function otpInput(idx) {
-  const el = document.getElementById('otp' + idx);
-  el.value = el.value.replace(/\D/g,'').slice(-1);
-  if (el.value && idx < 5) document.getElementById('otp' + (idx+1)).focus();
-  checkOTPFull();
-}
-function otpKey(e, idx) {
-  if (e.key === 'Backspace' && !document.getElementById('otp' + idx).value && idx > 0)
-    document.getElementById('otp' + (idx-1)).focus();
-}
-function checkOTPFull() {
-  const code = getOTPValue();
-  if (code.length === 6) verifyOTP();
-}
-function getOTPValue() {
-  return Array.from({length:6}, (_,i) => document.getElementById('otp'+i).value).join('');
-}
-function verifyOTP() {
-  const code = getOTPValue();
-  if (code.length < 6) {
-    document.getElementById('otpErrorMsg').textContent = 'Please enter all 6 digits.';
-    document.getElementById('otpError').classList.add('visible');
-    return;
-  }
-  document.getElementById('otpError').classList.remove('visible');
-  setLoading('verifyBtn','spinnerOTP', null, true);
-  setTimeout(() => {
-    setLoading('verifyBtn','spinnerOTP', null, false);
-    // Demo: accept "123456" as correct
-    if (code === '123456') {
-      for (let i=0;i<6;i++) document.getElementById('otp'+i).classList.add('success');
-      showToast('success','OTP Verified!','Welcome back! Signing you in…');
-      setTimeout(closeOTPModal, 1200);
+    if (!unid) {
+      showFieldError("cunError", "cunErrorMsg", "Please enter your Customer Unique Number.");
+      document.getElementById("cunInput").classList.add("error");
+      isValid = false;
     } else {
-      document.getElementById('otpErrorMsg').textContent = 'Incorrect OTP. Try demo code: 123456';
-      document.getElementById('otpError').classList.add('visible');
-      for (let i=0;i<6;i++) document.getElementById('otp'+i).classList.add('error');
+      hideFieldError("cunError");
+      document.getElementById("cunInput").classList.remove("error");
     }
-  }, 1400);
-}
 
-/* ───── FORGOT PASSWORD ───── */
-function showForgotModal() {
-  showToast('info','Reset Password','Check your registered email or mobile for a reset link.');
-}
+    if (!password) {
+      showFieldError("passError", "passErrorMsg", "Please enter your password.");
+      document.getElementById("passwordInput").classList.add("error");
+      isValid = false;
+    } else {
+      hideFieldError("passError");
+      document.getElementById("passwordInput").classList.remove("error");
+    }
 
-/* ───── TOAST SYSTEM ───── */
-const TOAST_ICONS = {
-  success: `<svg class="toast-icon" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>`,
-  error:   `<svg class="toast-icon" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`,
-  warn:    `<svg class="toast-icon" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="m10.29 3.86-8.19 14A1 1 0 0 0 3 19h18a1 1 0 0 0 .89-1.45l-8.19-14a1 1 0 0 0-1.78 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
-  info:    `<svg class="toast-icon" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
-};
-function showToast(type, title, msg, duration=4000) {
-  const container = document.getElementById('toastContainer');
-  const t = document.createElement('div');
-  t.className = 'toast ' + type;
-  t.innerHTML = `
-    ${TOAST_ICONS[type] || TOAST_ICONS.info}
-    <div class="toast-body">
-      <div class="toast-title">${title}</div>
-      ${msg ? `<div class="toast-msg">${msg}</div>` : ''}
-    </div>
-    <button class="toast-x" onclick="this.closest('.toast').remove()">&#x2715;</button>
-  `;
-  container.appendChild(t);
-  requestAnimationFrame(() => { requestAnimationFrame(() => t.classList.add('show')); });
-  setTimeout(() => {
-    t.classList.remove('show');
-    setTimeout(() => t.remove(), 400);
-  }, duration);
-}
+    if (!isValid) return;
 
-/* ───── CLOSE MODAL ON OVERLAY CLICK ───── */
-document.getElementById('otpModal').addEventListener('click', e => {
-  if (e.target === document.getElementById('otpModal')) closeOTPModal();
-});
+    /* 3. Show loading state on the button */
+    setButtonLoading(true);
 
-/* ───── MOBILE NUMBER DIGIT-ONLY ───── */
-document.getElementById('mobileInput').addEventListener('input', function() {
-  this.value = this.value.replace(/\D/g,'');
-  if (this.value.length === 10) clearError('mobile');
-});
+    try {
+      /* 4. Call the backend  POST /api/login */
+      const response = await fetch(API_BASE + "/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ unid, password })
+      });
 
-/* ───── KEYBOARD: ENTER TO SUBMIT ───── */
-document.addEventListener('keydown', e => {
-  if (e.key !== 'Enter') return;
-  if (document.getElementById('otpModal').classList.contains('open')) { verifyOTP(); return; }
-  if (currentTab === 'cun')      handleCUNSubmit();
-  if (currentTab === 'mobile')   handleMobileSubmit();
-  if (currentTab === 'password') handlePasswordSubmit();
-});
+      const data = await response.json();
+
+      if (!response.ok) {
+        /* Show the server error (e.g. "Invalid Customer ID or Password.") */
+        showToast("error", "Login Failed", data.detail || "Invalid credentials.");
+        showFieldError("cunError",  "cunErrorMsg",  data.detail || "Invalid credentials.");
+        showFieldError("passError", "passErrorMsg", " ");
+        document.getElementById("cunInput").classList.add("error");
+        document.getElementById("passwordInput").classList.add("error");
+        return;
+      }
+
+      /* 5. Persist everything the app will need */
+      localStorage.setItem("access_token",   data.access_token);
+      localStorage.setItem("customer_unid",  unid);
+      localStorage.setItem("full_name",       data.full_name);   // ← was missing before
+
+      /* 6. Success feedback then redirect */
+      showToast("success", "Welcome back!", "Redirecting to your dashboard…");
+
+      setTimeout(() => {
+        window.location.href = "demo.html";
+      }, 900);
+
+    } catch (err) {
+      console.error("Login network error:", err);
+      showToast("error", "Connection Error", "Unable to reach the server. Is the backend running?");
+    } finally {
+      /* Always restore the button */
+      setButtonLoading(false);
+    }
+  }
+
+  /* ─────────────────────────────────────────────────────
+   *  HELPER: toggle button loading spinner
+   * ───────────────────────────────────────────────────── */
+  function setButtonLoading(loading) {
+    const btn     = document.getElementById("btnCUN");
+    const spinner = document.getElementById("spinnerCUN");
+    const arrow   = document.getElementById("arrowCUN");
+    const label   = btn.querySelector(".btn-label");
+
+    btn.disabled       = loading;
+    spinner.style.display = loading ? "block" : "none";
+    arrow.style.display   = loading ? "none"  : "block";
+    label.textContent     = loading ? "Signing in…" : "Continue";
+  }
+
+  /* ─────────────────────────────────────────────────────
+   *  HELPER: show / hide inline field errors
+   * ───────────────────────────────────────────────────── */
+  function showFieldError(errorDivId, msgSpanId, msg) {
+    const div = document.getElementById(errorDivId);
+    if (msgSpanId) document.getElementById(msgSpanId).textContent = msg;
+    div.classList.add("visible");
+  }
+
+  function hideFieldError(errorDivId) {
+    document.getElementById(errorDivId).classList.remove("visible");
+  }
+
+  /* ─────────────────────────────────────────────────────
+   *  EXISTING HELPERS (kept intact below)
+   * ───────────────────────────────────────────────────── */
+
+  /* Tab switcher */
+  function switchTab(tab) {
+    document.querySelectorAll(".form-section").forEach(s => s.classList.remove("visible"));
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+    document.getElementById("section-" + tab).classList.add("visible");
+    const tabMap = { cun: "tabCUN", mobile: "tabMob", password: "tabPass" };
+    if (tabMap[tab]) document.getElementById(tabMap[tab]).classList.add("active");
+    updateProgress(tab);
+  }
+
+  function updateProgress(tab) {
+    const map = { cun: 33, mobile: 66, password: 100 };
+    document.getElementById("progressFill").style.width = (map[tab] || 0) + "%";
+  }
+
+  /* Password toggle */
+  function togglePassword() {
+    const inp  = document.getElementById("passwordInput");
+    const icon = document.getElementById("eyeIcon");
+    const show = inp.type === "password";
+    inp.type = show ? "text" : "password";
+    icon.innerHTML = show
+      ? '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>'
+      : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+  }
+
+  /* Password strength meter */
+  document.addEventListener("DOMContentLoaded", () => {
+    const pwdInput = document.getElementById("passwordInput");
+    if (pwdInput) {
+      pwdInput.addEventListener("input", () => {
+        updateStrength(pwdInput.value);
+      });
+    }
+
+    /* Pre-fill remembered CUN */
+    const saved = localStorage.getItem("remembered_cun");
+    if (saved) {
+      const el = document.getElementById("cunInput");
+      if (el) { el.value = saved; document.getElementById("rememberCUN").checked = true; }
+    }
+
+    /* CUN character counter */
+    const cunInput = document.getElementById("cunInput");
+    if (cunInput) {
+      cunInput.addEventListener("input", () => {
+        document.getElementById("cunCounter").textContent = cunInput.value.length + " / 20";
+      });
+    }
+
+    updateProgress("cun");
+  });
+
+  function updateStrength(val) {
+    const bars   = [document.getElementById("sb1"), document.getElementById("sb2"),
+                    document.getElementById("sb3"), document.getElementById("sb4")];
+    const text   = document.getElementById("strengthText");
+    bars.forEach(b => b.className = "strength-bar");
+    if (!val) { text.textContent = ""; return; }
+    let score = 0;
+    if (val.length >= 8)           score++;
+    if (/[A-Z]/.test(val))         score++;
+    if (/[0-9]/.test(val))         score++;
+    if (/[^A-Za-z0-9]/.test(val))  score++;
+    const labels = ["", "Weak", "Fair", "Good", "Strong"];
+    const cls    = ["", "weak", "weak", "medium", "strong"];
+    for (let i = 0; i < score; i++) bars[i].classList.add(cls[score]);
+    text.textContent = val.length ? labels[score] : "";
+  }
+
+  /* OTP modal (UI-only, no backend endpoint needed yet) */
+  function closeOTPModal() {
+    document.getElementById("otpModal").classList.remove("open");
+  }
+
+  function showForgotModal() {
+    showToast("info", "Forgot Password", "Please call 1800-102-1616 to reset your password.");
+  }
+
+  /* OTP digit navigation */
+  function otpInput(idx) {
+    const val = document.getElementById("otp" + idx).value;
+    if (val && idx < 5) document.getElementById("otp" + (idx + 1)).focus();
+  }
+  function otpKey(e, idx) {
+    if (e.key === "Backspace" && !document.getElementById("otp" + idx).value && idx > 0)
+      document.getElementById("otp" + (idx - 1)).focus();
+  }
+
+  /* ── Toast notification ── */
+  function showToast(type, title, msg, duration = 4000) {
+    const icons = {
+      success: '<svg class="toast-icon" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+      error:   '<svg class="toast-icon" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
+      warn:    '<svg class="toast-icon" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+      info:    '<svg class="toast-icon" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
+    };
+    const t = document.createElement("div");
+    t.className = "toast " + type;
+    t.innerHTML = (icons[type] || icons.info) +
+      `<div class="toast-body"><div class="toast-title">${title}</div><div class="toast-msg">${msg}</div></div>` +
+      `<button class="toast-x" onclick="this.parentElement.remove()">&#x2715;</button>`;
+    document.getElementById("toastContainer").appendChild(t);
+    requestAnimationFrame(() => t.classList.add("show"));
+    setTimeout(() => { t.classList.remove("show"); setTimeout(() => t.remove(), 400); }, duration);
+  }
 </script>
 
 </body>
