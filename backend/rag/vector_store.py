@@ -1,4 +1,5 @@
 import os
+import faiss
 import numpy as np
 import google.generativeai as genai
 from dotenv import load_dotenv
@@ -12,11 +13,19 @@ genai.configure(
 
 class LocalVectorStore:
 
-    def __init__(self):
-        self.chunks = []
-        self.embeddings = []
+    def __init__(self): 
 
-    def populate_from_file(self, filepath: str):
+        self.model = SentenceTransformer(
+            "all-MiniLM-L6-v2"
+        )
+
+        self.index = None
+        self.documents = []
+
+    def populate_from_file(
+        self,
+        filepath: str
+    ):
 
         if not os.path.exists(filepath):
 
@@ -31,7 +40,8 @@ class LocalVectorStore:
                 encoding="utf-8"
             ) as f:
 
-                f.write("""
+                f.write(
+"""
 Muthoot Gold Loan Policy
 
 Gold loans are available against eligible gold ornaments.
@@ -43,15 +53,35 @@ Interest rates start from 9.5%.
 Customers can repay through UPI, Net Banking, Cash and Branch Payments.
 
 KYC verification is mandatory before loan approval.
-""")
 
-        with open(filepath, "r", encoding="utf-8") as f:
+Gold purity must generally be 18K or above.
+
+Loans are subject to verification and approval.
+
+Customers may close loans early without restrictions depending on the loan scheme.
+
+EMI reminders are sent through SMS.
+
+For assistance contact Muthoot Fincorp Customer Support.
+"""
+                )
+
+        with open(
+            filepath,
+            "r",
+            encoding="utf-8"
+        ) as f:
+
             text = f.read()
 
-        paragraphs = [
-            p.strip()
-            for p in text.split("\n\n")
-            if p.strip()
+        chunks = [
+
+            chunk.strip()
+
+            for chunk in text.split("\n\n")
+
+            if chunk.strip()
+
         ]
 
         self.chunks.clear()
@@ -83,10 +113,11 @@ KYC verification is mandatory before loan approval.
     def semantic_search(
         self,
         query: str,
-        top_k: int = 2
-    ) -> str:
+        top_k: int = 3
+    ):
 
-        if not self.embeddings:
+        if self.index is None:
+
             return ""
 
         try:

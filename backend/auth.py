@@ -1,67 +1,54 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import JWTError, jwt
-import os
-from dotenv import load_dotenv
+from backend.config import settings
 
-load_dotenv()
-
-SECRET_KEY = os.getenv("JWT_SECRET_KEY", "muthoot_fincorp_chatbot_2026")
-print("SECRET_KEY =", SECRET_KEY)
-
-ALGORITHM = "HS256"
+ALGORITHM = settings.ALGORITHM
 
 security_bearer = HTTPBearer()
 
-def create_access_token(customer_id: int):
 
+def create_access_token(customer_id: int):
     payload = {
         "sub": str(customer_id),
-        "exp": datetime.utcnow() + timedelta(hours=8)
+        "exp": datetime.now(timezone.utc) + timedelta(hours=8)
     }
-
-    print("Creating JWT Payload:", payload)
-
     token = jwt.encode(
         payload,
-        SECRET_KEY,
+        settings.SECRET_KEY,
         algorithm=ALGORITHM
     )
-
-    print("Generated Token:", token)
-
     return token
 
 
 def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security_bearer)
 ):
-
     try:
-        print("\n========== JWT DEBUG ==========")
-        print("Authorization Scheme:", credentials.scheme)
-        print("Received Token:", credentials.credentials)
-
         payload = jwt.decode(
             credentials.credentials,
-            SECRET_KEY,
+            settings.SECRET_KEY,
             algorithms=[ALGORITHM]
         )
-
-        print("Decoded Payload:", payload)
-        print("Customer ID:", payload["sub"])
-        print("===============================\n")
-
         return int(payload["sub"])
-
-    except JWTError as e:
-
-        print("\n========== JWT ERROR ==========")
-        print("Error:", str(e))
-        print("===============================\n")
-
+    except JWTError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid session."
         )
+
+def get_optional_user(
+    credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer(auto_error=False))
+):
+    if not credentials:
+        return None
+    try:
+        payload = jwt.decode(
+            credentials.credentials,
+            settings.SECRET_KEY,
+            algorithms=[ALGORITHM]
+        )
+        return int(payload["sub"])
+    except JWTError:
+        return None

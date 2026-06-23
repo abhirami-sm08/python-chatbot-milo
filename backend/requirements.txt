@@ -6,3 +6,5 @@ python-jose
 google-generativeai
 numpy
 email-validator
+sentence-transformers
+faiss-cpu
