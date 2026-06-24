@@ -1,3 +1,5 @@
+import os
+import re
 from google import genai
 from google.genai import types
 
@@ -9,12 +11,62 @@ from backend.rag.response_formatter import format_sql_response
 from backend.rag.memory import get_chat_history
 
 # -------------------------------------------------
-# Gemini Client
+# API Key Rotation & Fallback Loading
 # -------------------------------------------------
 
-client = genai.Client(
-    api_key=settings.GEMINI_API_KEY
-)
+def load_all_api_keys() -> list[str]:
+    keys = []
+    # Try reading from api.txt in the backend parent directory
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    api_txt_path = os.path.join(base_dir, "api.txt")
+    if os.path.exists(api_txt_path):
+        try:
+            with open(api_txt_path, "r", encoding="utf-8") as f:
+                for line in f:
+                    # Match clean AQ. key format
+                    m = re.match(r"^(AQ\.[a-zA-Z0-9_-]+)", line.strip())
+                    if m:
+                        keys.append(m.group(1))
+        except Exception as e:
+            print(f"Error loading api.txt: {e}")
+    
+    # Prepend the primary key from settings if present and unique
+    primary = settings.GEMINI_API_KEY
+    if primary and primary not in keys:
+        keys.insert(0, primary)
+    return keys
+
+API_KEYS = load_all_api_keys()
+current_key_idx = 0
+
+def generate_content_with_fallback(contents, config, model="gemini-2.5-flash"):
+    """
+    Attempt to call Gemini generate_content using primary key and rotates through 
+    available fallback keys from api.txt if rate limits or quota exceptions occur.
+    Remembers the last successful key index to speed up future requests.
+    """
+    global current_key_idx
+    last_ex = None
+    n_keys = len(API_KEYS)
+    for i in range(n_keys):
+        idx = (current_key_idx + i) % n_keys
+        key = API_KEYS[idx]
+        try:
+            client = genai.Client(api_key=key)
+            response = client.models.generate_content(
+                model=model,
+                contents=contents,
+                config=config
+            )
+            # Save the successful key index
+            current_key_idx = idx
+            return response
+        except Exception as e:
+            print(f"Gemini key index {idx} failed: {e}")
+            last_ex = e
+    if last_ex:
+        raise last_ex
+    raise Exception("No valid Gemini API keys found.")
 
 # -------------------------------------------------
 # Vector Store
@@ -47,9 +99,12 @@ def run_milo_rag(
     # Step 2 : Rewrite Follow-up Question
     # ---------------------------------------------
 
-    try:
+    rewritten_query = user_query
+    # Only rewrite if there is actual history to reference
+    if history.strip():
+        try:
 
-        rewrite_prompt = f"""
+            rewrite_prompt = f"""
 You are an AI assistant that rewrites follow-up customer questions into complete standalone questions.
 
 Conversation History:
@@ -114,25 +169,19 @@ What is the status of my complaint?
 
 """
 
-        rewrite_response = client.models.generate_content(
-
-            model="gemini-2.5-flash",
-
-            contents=rewrite_prompt,
-
-            config=types.GenerateContentConfig(
-
-                temperature=0
-
+            rewrite_response = generate_content_with_fallback(
+                model="gemini-2.5-flash",
+                contents=rewrite_prompt,
+                config=types.GenerateContentConfig(
+                    temperature=0
+                )
             )
 
-        )
+            rewritten_query = rewrite_response.text.strip()
 
-        rewritten_query = rewrite_response.text.strip()
-
-    except Exception:
-
-        rewritten_query = user_query
+        except Exception as e:
+            print(f"Rewrite Exception: {e}")
+            rewritten_query = user_query
 
     # ---------------------------------------------
     # Step 3 : Semantic Intent Detection
@@ -255,20 +304,13 @@ friendly and concise manner.
 
     try:
 
-        response = client.models.generate_content(
-
+        response = generate_content_with_fallback(
             model="gemini-2.5-flash",
-
             contents=prompt,
-
             config=types.GenerateContentConfig(
-
                 temperature=0.2,
-
                 max_output_tokens=500
-
             )
-
         )
 
         if (

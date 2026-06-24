@@ -16,6 +16,7 @@ class Settings:
 
     DB_PASSWORD = os.getenv("ORACLE_DB_PASSWORD")
 
+    
     DB_DSN = os.getenv("ORACLE_DB_DSN")
 
     # -------------------------
