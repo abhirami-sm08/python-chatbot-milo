@@ -1,14 +1,8 @@
 import os
 import faiss
 import numpy as np
-import google.generativeai as genai
-from dotenv import load_dotenv
 
-load_dotenv()
-
-genai.configure(
-    api_key=os.getenv("GEMINI_API_KEY")
-)
+from sentence_transformers import SentenceTransformer
 
 
 class LocalVectorStore:
@@ -84,31 +78,23 @@ For assistance contact Muthoot Fincorp Customer Support.
 
         ]
 
-        self.chunks.clear()
-        self.embeddings.clear()
+        self.documents = chunks
 
-        for paragraph in paragraphs:
+        embeddings = self.model.encode(
+            chunks,
+            convert_to_numpy=True,
+            normalize_embeddings=True
+        )
 
-            try:
+        dimension = embeddings.shape[1]
 
-                response = genai.embed_content(
-                    model="models/text-embedding-004",
-                    content=paragraph,
-                    task_type="retrieval_document"
-                )
+        self.index = faiss.IndexFlatIP(
+            dimension
+        )
 
-                embedding = (
-                    response["embedding"]
-                    if isinstance(response, dict)
-                    else response.embedding
-                )
-
-                self.chunks.append(paragraph)
-                self.embeddings.append(embedding)
-
-            except Exception as e:
-
-                print(f"Embedding Error: {e}")
+        self.index.add(
+            embeddings.astype(np.float32)
+        )
 
     def semantic_search(
         self,
@@ -120,43 +106,25 @@ For assistance contact Muthoot Fincorp Customer Support.
 
             return ""
 
-        try:
+        query_embedding = self.model.encode(
+            [query],
+            convert_to_numpy=True,
+            normalize_embeddings=True
+        )
 
-            response = genai.embed_content(
-                model="models/text-embedding-004",
-                content=query,
-                task_type="retrieval_query"
-            )
+        scores, indices = self.index.search(
+            query_embedding.astype(np.float32),
+            top_k
+        )
 
-            query_embedding = (
-                response["embedding"]
-                if isinstance(response, dict)
-                else response.embedding
-            )
+        results = []
 
-            scores = []
+        for idx in indices[0]:
 
-            for embedding in self.embeddings:
+            if idx != -1:
 
-                similarity = (
-                    np.dot(query_embedding, embedding)
-                    /
-                    (
-                        np.linalg.norm(query_embedding)
-                        * np.linalg.norm(embedding)
-                    )
+                results.append(
+                    self.documents[idx]
                 )
 
-                scores.append(similarity)
-
-            top_indices = np.argsort(scores)[-top_k:][::-1]
-
-            return "\n\n".join(
-                self.chunks[i]
-                for i in top_indices
-            )
-
-        except Exception as e:
-
-            print(f"Vector Search Error: {e}")
-            return ""
+        return "\n".join(results)

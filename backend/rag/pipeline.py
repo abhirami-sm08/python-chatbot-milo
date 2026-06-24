@@ -1,61 +1,31 @@
 from google import genai
 from google.genai import types
 
-from dotenv import load_dotenv
-import google.generativeai as genai
-
+from backend.config import settings
 from backend.rag.vector_store import LocalVectorStore
 from backend.rag.intent_classifier import classify_intent
 from backend.rag.router import route_query
 from backend.rag.response_formatter import format_sql_response
 from backend.rag.memory import get_chat_history
 
-# ----------------------------
-# Gemini Configuration
-# ----------------------------
+# -------------------------------------------------
+# Gemini Client
+# -------------------------------------------------
 
-genai.configure(
-    api_key=os.getenv("GEMINI_API_KEY")
+client = genai.Client(
+    api_key=settings.GEMINI_API_KEY
 )
 
-model = genai.GenerativeModel(
-    "gemini-2.5-flash"
-)
+# -------------------------------------------------
+# Vector Store
+# -------------------------------------------------
 
-# ----------------------------
-# Load Vector Store
-# ----------------------------
-
-v_store = LocalVectorStore()
+vector_store = LocalVectorStore()
 
 vector_store.populate_from_file(
     "faq_docs/muthoot_policy.txt"
 )
 
-# ----------------------------
-# Gemini Response
-# ----------------------------
-
-def generate_response(prompt: str):
-
-    try:
-
-        response = model.generate_content(
-            prompt
-        )
-
-        return response.text
-
-    except Exception as e:
-
-        return (
-            "Unable to generate response.\n"
-            f"Error: {str(e)}"
-        )
-
-# ----------------------------
-# Main RAG Pipeline
-# ----------------------------
 
 def run_milo_rag(
     user_query: str,
