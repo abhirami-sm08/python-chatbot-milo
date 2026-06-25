@@ -1,7 +1,7 @@
 import os
 import re
-from google import genai
-from google.genai import types
+
+import requests
 
 from backend.config import settings
 from backend.rag.vector_store import LocalVectorStore
@@ -11,62 +11,44 @@ from backend.rag.response_formatter import format_sql_response
 from backend.rag.memory import get_chat_history
 
 # -------------------------------------------------
-# API Key Rotation & Fallback Loading
+# Ollama Generation
 # -------------------------------------------------
 
-def load_all_api_keys() -> list[str]:
-    keys = []
-    # Try reading from api.txt in the backend parent directory
-    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    api_txt_path = os.path.join(base_dir, "api.txt")
-    if os.path.exists(api_txt_path):
-        try:
-            with open(api_txt_path, "r", encoding="utf-8") as f:
-                for line in f:
-                    # Match clean AQ. key format
-                    m = re.match(r"^(AQ\.[a-zA-Z0-9_-]+)", line.strip())
-                    if m:
-                        keys.append(m.group(1))
-        except Exception as e:
-            print(f"Error loading api.txt: {e}")
+def generate_content_with_ollama(messages, temperature=0.2, max_output_tokens=None, model=None):
+    """
+    Call local Ollama server to generate content using the chat endpoint.
+    """
+    if model is None:
+        model = settings.OLLAMA_MODEL
     
-    # Prepend the primary key from settings if present and unique
-    primary = settings.GEMINI_API_KEY
-    if primary and primary not in keys:
-        keys.insert(0, primary)
-    return keys
-
-API_KEYS = load_all_api_keys()
-current_key_idx = 0
-
-def generate_content_with_fallback(contents, config, model="gemini-2.5-flash"):
-    """
-    Attempt to call Gemini generate_content using primary key and rotates through 
-    available fallback keys from api.txt if rate limits or quota exceptions occur.
-    Remembers the last successful key index to speed up future requests.
-    """
-    global current_key_idx
-    last_ex = None
-    n_keys = len(API_KEYS)
-    for i in range(n_keys):
-        idx = (current_key_idx + i) % n_keys
-        key = API_KEYS[idx]
-        try:
-            client = genai.Client(api_key=key)
-            response = client.models.generate_content(
-                model=model,
-                contents=contents,
-                config=config
-            )
-            # Save the successful key index
-            current_key_idx = idx
-            return response
-        except Exception as e:
-            print(f"Gemini key index {idx} failed: {e}")
-            last_ex = e
-    if last_ex:
-        raise last_ex
-    raise Exception("No valid Gemini API keys found.")
+    payload = {
+        "model": model,
+        "messages": messages,
+        "stream": False,
+        "keep_alive": -1,  # Keep the model loaded in VRAM to prevent slow loading
+        "options": {
+            "temperature": temperature
+        }
+    }
+    if max_output_tokens:
+        payload["options"]["num_predict"] = max_output_tokens
+        
+    try:
+        response = requests.post(f"{settings.OLLAMA_BASE_URL}/api/chat", json=payload)
+        response.raise_for_status()
+        
+        data = response.json()
+        
+        # Create a dummy object to mimic the Gemini response structure
+        class DummyResponse:
+            def __init__(self, text):
+                self.text = text
+                
+        return DummyResponse(data.get("message", {}).get("content", ""))
+        
+    except Exception as e:
+        print(f"Ollama generation failed: {e}")
+        raise e
 
 # -------------------------------------------------
 # Vector Store
@@ -96,92 +78,12 @@ def run_milo_rag(
         )
 
     # ---------------------------------------------
-    # Step 2 : Rewrite Follow-up Question
+    # Step 2 : Rewrite Follow-up Question (SKIPPED FOR SPEED)
     # ---------------------------------------------
 
     rewritten_query = user_query
-    # Only rewrite if there is actual history to reference
-    if history.strip():
-        try:
-
-            rewrite_prompt = f"""
-You are an AI assistant that rewrites follow-up customer questions into complete standalone questions.
-
-Conversation History:
-
-{history}
-
-Current Customer Question:
-
-{user_query}
-
-Instructions:
-
-- Use the conversation history.
-- Rewrite the current question into a complete standalone question.
-- If the question already makes sense, return it unchanged.
-- Never answer the question.
-- Return ONLY the rewritten question.
-
-Examples:
-
-Conversation:
-
-User: Show my EMI schedule.
-
-User: When is the next one due?
-
-Output:
-When is my next EMI due?
-
------------------------------------
-
-Conversation:
-
-User: Tell me about my loan.
-
-User: How much is left?
-
-Output:
-What is my remaining loan balance?
-
------------------------------------
-
-Conversation:
-
-User: Show my payment history.
-
-User: Which payment was the latest?
-
-Output:
-Show my latest payment history.
-
------------------------------------
-
-Conversation:
-
-User: I raised a complaint yesterday.
-
-User: What's its status?
-
-Output:
-What is the status of my complaint?
-
-"""
-
-            rewrite_response = generate_content_with_fallback(
-                model="gemini-2.5-flash",
-                contents=rewrite_prompt,
-                config=types.GenerateContentConfig(
-                    temperature=0
-                )
-            )
-
-            rewritten_query = rewrite_response.text.strip()
-
-        except Exception as e:
-            print(f"Rewrite Exception: {e}")
-            rewritten_query = user_query
+    # We skip the rewrite LLM call to save 5+ seconds of processing time.
+    # The final prompt still receives the history, so the LLM can infer context.
 
     # ---------------------------------------------
     # Step 3 : Semantic Intent Detection
@@ -236,11 +138,8 @@ What is the status of my complaint?
     # Step 7 : Build Prompt
     # ---------------------------------------------
 
-    prompt = f"""
-You are Milo, the AI Assistant for Muthoot Fincorp.
-
+    system_prompt = f"""You are Milo, the AI Assistant for Muthoot Fincorp.
 You help customers with:
-
 • Loan information
 • EMI details
 • Payment history
@@ -248,55 +147,32 @@ You help customers with:
 • Gold loan policies
 • Company procedures
 
-==================================================
+RULES:
+1. Answer extremely concisely. Use maximum 2-3 sentences.
+2. If DATABASE information is provided, use it directly to give specific amounts, dates, and details.
+3. If FAQ information is provided, use it to explain policies.
+4. If the user asks for account-specific details but Database Information is empty, POLITELY ASK THEM TO LOG IN.
+5. Do not invent information.
+6. Decline unrelated questions politely."""
 
-RULES
-
-1. Continue the conversation naturally.
-
-2. Always use DATABASE information whenever available.
-
-3. DATABASE information is always correct. You have full access to the user's secure database information. Answer their questions directly and provide specific amounts, dates, and details using this data without citing privacy or security concerns.
-
-4. FAQ information should only explain company policies, eligibility, documents, gold loans, repayment methods, interest rates and procedures.
-
-5. Never invent customer information.
-
-6. If the user asks for account-specific details (like loan balance, EMI, or account status) but the Database Information is empty, POLITELY ASK THEM TO LOG IN to view their secure account details. Do not tell them to contact customer support for this.
-
-7. OUT OF DOMAIN: If the customer's question is entirely unrelated to finance, banking, Muthoot Fincorp, or loans (e.g., asking for a poem, sports scores, cooking recipes), politely decline to answer and remind them you are a banking assistant.
-
-8. If both DATABASE and FAQ information are available, combine both into one natural answer.
-
-==================================================
-
-Conversation History
-
+    user_message = f"""Conversation History:
 {history}
 
-==================================================
-
-Database Information
-
+Database Information:
 {structured_data}
 
-==================================================
-
-FAQ Information
-
+FAQ Information:
 {faq_context}
 
-==================================================
-
-Customer Question
-
+Customer Question:
 {rewritten_query}
 
-==================================================
+Answer the customer question based on the provided information."""
 
-Answer as Milo in a professional,
-friendly and concise manner.
-"""
+    messages = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": user_message}
+    ]
     
     # ---------------------------------------------
     # Step 8 : Gemini Response
@@ -304,13 +180,10 @@ friendly and concise manner.
 
     try:
 
-        response = generate_content_with_fallback(
-            model="gemini-2.5-flash",
-            contents=prompt,
-            config=types.GenerateContentConfig(
-                temperature=0.2,
-                max_output_tokens=500
-            )
+        response = generate_content_with_ollama(
+            messages=messages,
+            temperature=0.2,
+            max_output_tokens=150
         )
 
         if (

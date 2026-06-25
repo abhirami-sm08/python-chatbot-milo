@@ -3,7 +3,7 @@ uvicorn
 oracledb
 python-dotenv
 python-jose[cryptography]
-google-genai
+requests
 numpy
 email-validator
 sentence-transformers

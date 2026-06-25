@@ -10,7 +10,8 @@ class LocalVectorStore:
     def __init__(self): 
 
         self.model = SentenceTransformer(
-            "all-MiniLM-L6-v2"
+            "all-MiniLM-L6-v2",
+            local_files_only=True
         )
 
         self.index = None

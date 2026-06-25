@@ -30,14 +30,18 @@ class Settings:
     ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
     # -------------------------
-    # Gemini
+    # Ollama
     # -------------------------
 
-    GEMINI_API_KEY = os.getenv(
-        "GEMINI_API_KEY"
+    OLLAMA_BASE_URL = os.getenv(
+        "OLLAMA_BASE_URL",
+        "http://localhost:11434"
     )
 
-    GEMINI_MODEL = "gemini-2.5-flash"
+    OLLAMA_MODEL = os.getenv(
+        "OLLAMA_MODEL",
+        "qwen3:8b"
+    )
 
     # -------------------------
     # Vector Database

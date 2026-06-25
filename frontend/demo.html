@@ -1387,6 +1387,9 @@
                     <span class="bot-name">Milo</span>
                 </div>
             </div>
+            <button class="minimize-btn" onclick="openHistoryModal()" style="margin-right: 10px;" title="Complaint History">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+            </button>
             <button class="minimize-btn" onclick="toggleChat()">
                 <i class="fa-solid fa-minus"></i>
             </button>
@@ -1417,6 +1420,18 @@
                     <div class="form-actions">
                         <button type="button" class="btn btn-cancel" onclick="closeReportForm()">Cancel</button>
                         <button type="button" class="btn btn-submit" onclick="submitReportForm()">Submit</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="report-overlay" id="historyOverlay">
+                <div class="report-form-card" style="max-height: 80%; overflow-y: auto;">
+                    <h4>Complaint History</h4>
+                    <div id="historyList" style="margin-bottom: 15px; font-size: 13px;">
+                        Loading...
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-cancel" onclick="closeHistoryModal()">Close</button>
                     </div>
                 </div>
             </div>
@@ -1576,9 +1591,89 @@
     document.getElementById("issueType").selectedIndex = 0;
     document.getElementById("issueNotes").value = "";
   }
-  function submitReportForm() {
+  async function submitReportForm() {
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+        closeReportForm();
+        renderMessage('❌ You must be logged in to report an issue.', 'bot');
+        return;
+    }
+
+    const issueType = document.getElementById("issueType").value;
+    const issueNotes = document.getElementById("issueNotes").value;
+    const msgContext = document.getElementById("flaggedMsgContext").value;
+
     closeReportForm();
-    renderMessage('✅ Thank you — your report has been submitted. We\'ll review it shortly.', 'bot');
+    
+    try {
+        const res = await fetch(API_BASE + "/api/complaints", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
+            },
+            body: JSON.stringify({
+                message_context: msgContext,
+                issue_type: issueType,
+                issue_notes: issueNotes
+            })
+        });
+        
+        if (res.status === 401) {
+            renderMessage('❌ Your session expired. Please log in to report an issue.', 'bot');
+        } else if (res.ok) {
+            renderMessage('✅ Thank you — your report has been submitted. We\'ll review it shortly.', 'bot');
+        } else {
+            renderMessage('❌ Failed to submit report. Please try again.', 'bot');
+        }
+    } catch(err) {
+        renderMessage('❌ Network error. Could not submit report.', 'bot');
+    }
+  }
+
+  async function openHistoryModal() {
+    const token = localStorage.getItem("access_token");
+    const historyOverlay = document.getElementById("historyOverlay");
+    const historyList = document.getElementById("historyList");
+    historyOverlay.classList.add("active");
+    
+    if (!token) {
+        historyList.innerHTML = "<p>Please log in to view your complaint history.</p>";
+        return;
+    }
+    
+    historyList.innerHTML = "<p>Loading...</p>";
+    try {
+        const res = await fetch(API_BASE + "/api/complaints", {
+            headers: { "Authorization": "Bearer " + token }
+        });
+        if (res.ok) {
+            const data = await res.json();
+            if (data.length === 0) {
+                historyList.innerHTML = "<p>No complaints found.</p>";
+            } else {
+                let html = "<ul style='list-style:none; padding:0; margin:0;'>";
+                data.forEach(item => {
+                    const d = new Date(item.created_at).toLocaleString();
+                    const color = item.status === 'SOLVED' ? 'green' : 'orange';
+                    html += `<li style="border-bottom:1px solid #ddd; padding:8px 0;">
+                        <b>${item.issue_type}</b> - <span style="color:${color}; font-weight:bold;">[${item.status}]</span><br>
+                        <small>${d}</small>
+                    </li>`;
+                });
+                html += "</ul>";
+                historyList.innerHTML = html;
+            }
+        } else {
+            historyList.innerHTML = "<p>Failed to load history.</p>";
+        }
+    } catch(err) {
+        historyList.innerHTML = "<p>Network error.</p>";
+    }
+  }
+
+  function closeHistoryModal() {
+    document.getElementById("historyOverlay").classList.remove("active");
   }
 
   window.onclick = function () {

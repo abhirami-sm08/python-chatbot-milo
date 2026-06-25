@@ -1,9 +1,13 @@
 import os
+os.environ["CURL_CA_BUNDLE"] = ""
+os.environ["REQUESTS_CA_BUNDLE"] = ""
+os.environ["HF_HUB_DISABLE_SSL_VERIFICATION"] = "1"
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
-from backend.routes import login, chat
+from backend.routes import login, chat, complaints
 from backend.admin.dashboard import router as admin_router
 from backend.admin.analytics import router as analytics_router
 
@@ -22,6 +26,7 @@ app.add_middleware(
 # --- API Routers ---
 app.include_router(login.router, prefix="/api")
 app.include_router(chat.router, prefix="/api")
+app.include_router(complaints.router, prefix="/api")
 app.include_router(admin_router, prefix="/api")
 app.include_router(analytics_router, prefix="/api")
 
