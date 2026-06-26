@@ -22,10 +22,33 @@ Technical Stack:
 
 - Backend: Python with FastAPI and Uvicorn server  
 - AI/NLP: RAG model (Hugging Face Transformers) + NLTK for text preprocessing  
+- LLM: Hosted OpenAI-compatible chat API by default, with optional local Ollama fallback
 - Database: Oracle SQL / SQL Plus  
 - Data Handling: Pandas for Excel/CSV imports  
 - Security: JWT for authentication  
 - IDE: VS Code  
+
+Hosted LLM Setup:
+
+Milo no longer needs Qwen/Ollama installed on your laptop. Add these values to
+`backend/.env` and use any OpenAI-compatible hosted provider:
+
+```env
+LLM_PROVIDER=openai_compatible
+LLM_BASE_URL=https://openrouter.ai/api/v1
+LLM_API_KEY=your_api_key_here
+LLM_MODEL=qwen/qwen3-8b
+LLM_TIMEOUT_SECONDS=60
+```
+
+You can switch providers by changing `LLM_BASE_URL`, `LLM_API_KEY`, and
+`LLM_MODEL`. For local development with Ollama, set:
+
+```env
+LLM_PROVIDER=ollama
+OLLAMA_BASE_URL=http://localhost:11434
+OLLAMA_MODEL=qwen3:8b
+```
 
 Workflow:  
 

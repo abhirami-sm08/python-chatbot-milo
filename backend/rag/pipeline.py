@@ -1,9 +1,4 @@
-import os
-import re
-
-import requests
-
-from backend.config import settings
+from backend.llm import generate_chat_response
 from backend.rag.vector_store import LocalVectorStore
 from backend.rag.intent_classifier import classify_intent
 from backend.rag.router import route_query
@@ -11,43 +6,23 @@ from backend.rag.response_formatter import format_sql_response
 from backend.rag.memory import get_chat_history
 
 # -------------------------------------------------
-# Ollama Generation
+# LLM Generation
 # -------------------------------------------------
 
-def generate_content_with_ollama(messages, temperature=0.2, max_output_tokens=None, model=None):
+def generate_content(messages, temperature=0.2, max_output_tokens=None, model=None):
     """
-    Call local Ollama server to generate content using the chat endpoint.
+    Call the configured LLM provider and return an object with a .text field.
     """
-    if model is None:
-        model = settings.OLLAMA_MODEL
-    
-    payload = {
-        "model": model,
-        "messages": messages,
-        "stream": False,
-        "keep_alive": -1,  # Keep the model loaded in VRAM to prevent slow loading
-        "options": {
-            "temperature": temperature
-        }
-    }
-    if max_output_tokens:
-        payload["options"]["num_predict"] = max_output_tokens
-        
     try:
-        response = requests.post(f"{settings.OLLAMA_BASE_URL}/api/chat", json=payload)
-        response.raise_for_status()
-        
-        data = response.json()
-        
-        # Create a dummy object to mimic the Gemini response structure
-        class DummyResponse:
-            def __init__(self, text):
-                self.text = text
-                
-        return DummyResponse(data.get("message", {}).get("content", ""))
-        
+        return generate_chat_response(
+            messages=messages,
+            temperature=temperature,
+            max_output_tokens=max_output_tokens,
+            model=model
+        )
+
     except Exception as e:
-        print(f"Ollama generation failed: {e}")
+        print(f"LLM generation failed: {e}")
         raise e
 
 # -------------------------------------------------
@@ -175,12 +150,12 @@ Answer the customer question based on the provided information."""
     ]
     
     # ---------------------------------------------
-    # Step 8 : Gemini Response
+    # Step 8 : LLM Response
     # ---------------------------------------------
 
     try:
 
-        response = generate_content_with_ollama(
+        response = generate_content(
             messages=messages,
             temperature=0.2,
             max_output_tokens=150

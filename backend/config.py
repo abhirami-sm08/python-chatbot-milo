@@ -30,13 +30,35 @@ class Settings:
     ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
     # -------------------------
-    # Ollama
+    # LLM Provider
     # -------------------------
 
+    LLM_PROVIDER = os.getenv(
+        "LLM_PROVIDER",
+        "openai_compatible"
+    ).lower()
+
+    LLM_BASE_URL = os.getenv(
+        "LLM_BASE_URL",
+        "https://openrouter.ai/api/v1"
+    ).rstrip("/")
+
+    LLM_API_KEY = os.getenv("LLM_API_KEY")
+
+    LLM_MODEL = os.getenv(
+        "LLM_MODEL",
+        "qwen/qwen3-8b"
+    )
+
+    LLM_TIMEOUT_SECONDS = int(
+        os.getenv("LLM_TIMEOUT_SECONDS", "60")
+    )
+
+    # Optional local fallback for development only.
     OLLAMA_BASE_URL = os.getenv(
         "OLLAMA_BASE_URL",
         "http://localhost:11434"
-    )
+    ).rstrip("/")
 
     OLLAMA_MODEL = os.getenv(
         "OLLAMA_MODEL",
