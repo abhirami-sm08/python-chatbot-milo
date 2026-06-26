@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 from typing import List, Optional
-from datetime import datetime
 from backend.database import get_db_connection
 from backend.auth import get_current_user
 
@@ -14,28 +13,63 @@ class ComplaintRequest(BaseModel):
 
 class ComplaintResponse(BaseModel):
     complaint_id: int
-    message_context: str
-    issue_type: str
-    issue_notes: str
+    subject: str
+    description: str
     status: str
-    created_at: datetime
 
 @router.post("/complaints")
-def submit_complaint(payload: ComplaintRequest, current_user: str = Depends(get_current_user)):
+def submit_complaint(payload: ComplaintRequest, current_user: int = Depends(get_current_user)):
     conn = get_db_connection()
     cursor = conn.cursor()
     
     try:
-        # Note: Depending on Oracle version, returning INTO may be needed, but we can just return success.
+        cursor.execute(
+            "SELECT NVL(MAX(COMPLAINT_ID), 0) + 1 FROM COMPLAINTS"
+        )
+        complaint_id = cursor.fetchone()[0]
+
+        description_parts = [
+            f"Message context: {payload.message_context}"
+        ]
+
+        if payload.issue_notes:
+            description_parts.append(f"Notes: {payload.issue_notes}")
+
+        subject = payload.issue_type[:200]
+        description = "\n".join(description_parts)[:1000]
+
         cursor.execute(
             """
-            INSERT INTO COMPLAINTS (C_ID, MESSAGE_CONTEXT, ISSUE_TYPE, ISSUE_NOTES, STATUS)
-            VALUES (:1, :2, :3, :4, 'OPEN')
+            INSERT INTO COMPLAINTS
+            (
+                COMPLAINT_ID,
+                C_ID,
+                SUBJECT,
+                DESCRIPTION,
+                STATUS
+            )
+            VALUES
+            (
+                :1,
+                :2,
+                :3,
+                :4,
+                'OPEN'
+            )
             """,
-            (current_user, payload.message_context, payload.issue_type, payload.issue_notes)
+            (
+                complaint_id,
+                current_user,
+                subject,
+                description
+            )
         )
         conn.commit()
-        return {"status": "success", "message": "Complaint submitted successfully."}
+        return {
+            "status": "success",
+            "message": "Complaint submitted successfully.",
+            "complaint_id": complaint_id
+        }
     except Exception as e:
         conn.rollback()
         raise HTTPException(status_code=500, detail=f"Database error: {e}")
@@ -44,17 +78,21 @@ def submit_complaint(payload: ComplaintRequest, current_user: str = Depends(get_
         conn.close()
 
 @router.get("/complaints", response_model=List[ComplaintResponse])
-def get_complaints(current_user: str = Depends(get_current_user)):
+def get_complaints(current_user: int = Depends(get_current_user)):
     conn = get_db_connection()
     cursor = conn.cursor()
     
     try:
         cursor.execute(
             """
-            SELECT COMPLAINT_ID, MESSAGE_CONTEXT, ISSUE_TYPE, ISSUE_NOTES, STATUS, CREATED_AT
+            SELECT
+                COMPLAINT_ID,
+                SUBJECT,
+                DESCRIPTION,
+                STATUS
             FROM COMPLAINTS
             WHERE C_ID = :1
-            ORDER BY CREATED_AT DESC
+            ORDER BY COMPLAINT_ID DESC
             """,
             (current_user,)
         )
@@ -62,14 +100,16 @@ def get_complaints(current_user: str = Depends(get_current_user)):
         
         complaints = []
         for row in rows:
-            complaint_id, msg_context, issue_type, issue_notes, stat, created_at = row
+            complaint_id, subject, description, stat = row
             complaints.append({
                 "complaint_id": complaint_id,
-                "message_context": msg_context.read() if hasattr(msg_context, 'read') else str(msg_context),
-                "issue_type": issue_type,
-                "issue_notes": issue_notes.read() if hasattr(issue_notes, 'read') else str(issue_notes),
-                "status": stat,
-                "created_at": created_at
+                "subject": subject or "",
+                "description": (
+                    description.read()
+                    if hasattr(description, "read")
+                    else str(description or "")
+                ),
+                "status": stat
             })
             
         return complaints

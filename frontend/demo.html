@@ -1654,11 +1654,10 @@
             } else {
                 let html = "<ul style='list-style:none; padding:0; margin:0;'>";
                 data.forEach(item => {
-                    const d = new Date(item.created_at).toLocaleString();
                     const color = item.status === 'SOLVED' ? 'green' : 'orange';
                     html += `<li style="border-bottom:1px solid #ddd; padding:8px 0;">
-                        <b>${item.issue_type}</b> - <span style="color:${color}; font-weight:bold;">[${item.status}]</span><br>
-                        <small>${d}</small>
+                        <b>${item.subject}</b> - <span style="color:${color}; font-weight:bold;">[${item.status}]</span><br>
+                        <small>Complaint #${item.complaint_id}</small>
                     </li>`;
                 });
                 html += "</ul>";
