@@ -36,6 +36,9 @@ INTENTS = {
 
     "loan_balance": [
         "loan balance",
+        "loan bal",
+        "lown bal",
+        "loan baal",
         "remaining balance",
         "outstanding amount",
         "remaining loan",
@@ -89,7 +92,11 @@ INTENTS = {
         "documents",
         "branch",
         "customer support",
-        "loan process"
+        "loan process",
+        "loan schemes",
+        "loan schemas",
+        "available schemes",
+        "available schemas"
 
     ]
 
@@ -104,10 +111,7 @@ for intent, examples in INTENTS.items():
         normalize_embeddings=True
     )
 
-    intent_vectors[intent] = np.mean(
-        embeddings,
-        axis=0
-    )
+    intent_vectors[intent] = embeddings
 
 
 def classify_intent(
@@ -122,19 +126,20 @@ def classify_intent(
     best_intent = "faq"
     best_score = -1
 
-    for intent, vector in intent_vectors.items():
+    for intent, vectors in intent_vectors.items():
 
-        similarity = np.dot(
-            query_embedding,
-            vector
+        similarities = np.dot(
+            vectors,
+            query_embedding
         )
+        max_sim = np.max(similarities)
 
-        if similarity > best_score:
+        if max_sim > best_score:
 
-            best_score = similarity
+            best_score = max_sim
             best_intent = intent
 
-    if best_score < 0.45:
+    if best_score < 0.5:
 
         return "faq"
 

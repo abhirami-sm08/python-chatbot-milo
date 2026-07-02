@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -563,7 +563,27 @@
   .footer-bottom a { color: rgba(255,255,255,0.55); text-decoration: none; }
   .footer-bottom a:hover { color: #fff; }
 
-  /* ─── CHAT BOT CONTAINER & FAB FROM DESIGN4.HTML ─── */
+  /* ─── CHATBOT OVERLAY BACKDROP ─── */
+  .chatbot-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(5, 20, 50, 0.55);
+    backdrop-filter: blur(4px);
+    z-index: 9000;
+    align-items: center;
+    justify-content: center;
+    animation: overlayFadeIn 0.25s ease;
+  }
+  .chatbot-overlay.open {
+    display: flex;
+  }
+  @keyframes overlayFadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  /* ─── CHATBOT FAB (floating action button) ─── */
   .chatbot {
     position: fixed;
     right: 28px;
@@ -586,48 +606,51 @@
     border: 1px solid var(--border);
   }
   .chat-btn {
-    width: 52px; height: 52px;
+    width: 58px; height: 58px;
     background: var(--blue-primary);
     border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
     cursor: pointer;
-    box-shadow: 0 4px 16px rgba(0,80,160,0.3);
+    box-shadow: 0 6px 22px rgba(0,80,160,0.38);
     position: relative;
-    transition: background 0.2s, transform 0.18s, opacity 0.2s ease;
+    transition: background 0.2s, transform 0.18s;
   }
-  .chat-btn:hover { background: var(--blue-dark); transform: scale(1.05); }
-  .chat-btn svg { width: 24px; height: 24px; color: #fff; }
+  .chat-btn:hover { background: var(--blue-dark); transform: scale(1.07); }
+  .chat-btn svg { width: 26px; height: 26px; color: #fff; }
   .chat-dot {
     position: absolute;
     top: 3px; right: 3px;
-    width: 10px; height: 10px;
+    width: 11px; height: 11px;
     background: #EF4444;
     border-radius: 50%;
     border: 2px solid #fff;
+    animation: pulse-dot 2s infinite;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50%       { transform: scale(1.3); opacity: 0.7; }
   }
 
-  .hero-srk{
-    position:absolute;
-    right:40px;
-    bottom:0;
-    height:420px;
-    z-index:4;
-    object-fit:contain;
+  .hero-srk {
+    position: absolute;
+    right: 40px;
+    bottom: 0;
+    height: 420px;
+    z-index: 4;
+    object-fit: contain;
     filter: drop-shadow(0 8px 24px rgba(0,0,0,0.15));
   }
-  .chatbot-avatar{
-    width:110px;
-    height:auto;
-    margin-bottom:-8px;
+  .chatbot-avatar {
+    width: 110px;
+    height: auto;
+    margin-bottom: -8px;
   }
-
-  .chat-assistant{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
+  .chat-assistant {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     transition: opacity 0.2s ease;
   }
-
   .hero-figure {
     position: absolute;
     right: 60px;
@@ -640,157 +663,241 @@
     justify-content: center;
   }
 
-  /* ─── CHATBOX WINDOW MODULE FROM DESIGN4.HTML ─── */
+  /* ─── CHAT WINDOW (two-column modal) ─── */
   .chat-window {
-    width: 380px;
-    height: 520px;
+    width: 900px;
+    max-width: 96vw;
+    height: 82vh;
+    max-height: 720px;
     background: white;
-    border-radius: 18px;
-    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.15);
+    border-radius: 20px;
+    box-shadow: 0 24px 80px rgba(0,30,90,0.28);
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    transform: scale(0.8);
-    opacity: 0;
-    pointer-events: none;
-    transform-origin: bottom right;
-    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
-    border: 1px solid var(--border);
+    border: 1px solid rgba(0,80,160,0.12);
+    animation: modalPopIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes modalPopIn {
+    from { opacity: 0; transform: scale(0.93) translateY(18px); }
+    to   { opacity: 1; transform: scale(1)   translateY(0); }
   }
 
-  /* Active state logic mapping */
-  .chatbot.open .chat-window {
-    transform: scale(1);
-    opacity: 1;
-    pointer-events: auto;
-  }
-
-  .chatbot.open .chat-btn {
-    transform: scale(0);
-    opacity: 0;
-    pointer-events: none;
-  }
-  
-  .chatbot.open .chat-assistant {
-    opacity: 0;
-    pointer-events: none;
-  }
-
-  /* --- CHAT HEADER --- */
+  /* ─── CHAT HEADER ─── */
   .chat-header {
-    background: var(--blue-primary);
+    background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue-primary) 100%);
     color: white;
-    padding: 16px 20px;
+    padding: 14px 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-shrink: 0;
     z-index: 11;
   }
-
   .profile-area {
     display: flex;
     align-items: center;
     gap: 12px;
   }
-
   .avatar {
-    width: 36px;
-    height: 36px;
+    width: 40px; height: 40px;
     border-radius: 50%;
     background: #fff;
-    background-image: url("images/sharuhkhan-pfp.png");
+    background-image: url('images/sharuhkhan-pfp.png');
     background-size: cover;
     border: 2px solid rgba(255,255,255,0.6);
+    flex-shrink: 0;
   }
-
-  .bot-name {
-    font-weight: 600;
-    font-size: 15px;
+  .bot-name { font-weight: 700; font-size: 15px; }
+  .bot-tag  { font-size: 11.5px; opacity: 0.75; margin-top: 1px; }
+  .header-status {
+    width: 8px; height: 8px;
+    background: #22c55e;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,0.7);
+    display: inline-block;
+    margin-right: 5px;
   }
-
+  .header-actions { display: flex; gap: 4px; }
   .minimize-btn {
-    background: none;
+    background: rgba(255,255,255,0.15);
     border: none;
     color: white;
-    font-size: 18px;
+    font-size: 14px;
     cursor: pointer;
-    opacity: 0.8;
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.18s;
+  }
+  .minimize-btn:hover { background: rgba(255,255,255,0.28); }
+
+  /* ─── QUERY BAR (shows reformulated question) ─── */
+  .query-bar {
+    background: #EFF6FF;
+    border-bottom: 1px solid #DBEAFE;
+    padding: 8px 20px;
+    font-size: 12.5px;
+    color: #1e40af;
+    font-weight: 500;
+    display: none;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .query-bar.visible { display: flex; }
+  .query-bar i { font-size: 11px; opacity: 0.7; }
+
+  /* ─── BODY (two columns) ─── */
+  .chat-body {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
   }
 
-  /* --- CHAT MESSAGES CONTAINER --- */
+  /* LEFT: messages ─── */
+  .chat-left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-right: 1px solid #E9F0FB;
+  }
+
+  /* RIGHT: related search ─── */
+  .chat-right {
+    width: 260px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    background: #F8FAFF;
+    overflow-y: auto;
+    padding: 16px 14px;
+    gap: 12px;
+  }
+  .chat-right::-webkit-scrollbar { width: 5px; }
+  .chat-right::-webkit-scrollbar-thumb { background: #c7d7f0; border-radius: 4px; }
+  .related-title {
+    font-size: 11.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+  .related-chip {
+    background: #fff;
+    border: 1.5px solid #DBEAFE;
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 12.5px;
+    color: #1e40af;
+    cursor: pointer;
+    transition: background 0.18s, border-color 0.18s, transform 0.15s;
+    line-height: 1.4;
+    display: block;
+    width: 100%;
+    text-align: left;
+  }
+  .related-chip:hover {
+    background: #EFF6FF;
+    border-color: var(--blue-primary);
+    transform: translateX(2px);
+  }
+  .related-chip i { margin-right: 6px; font-size: 11px; color: var(--blue-primary); }
+
+  /* ─── MESSAGES AREA ─── */
   .chat-messages {
     flex: 1;
-    padding: 20px;
+    padding: 18px 20px;
     overflow-y: auto;
     background: #f8fafc;
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    position: relative;
+    gap: 14px;
   }
+  .chat-messages::-webkit-scrollbar { width: 6px; }
+  .chat-messages::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
 
-  .chat-messages::-webkit-scrollbar {
-    width: 6px;
-  }
-  .chat-messages::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 4px;
-  }
-
-  /* Message Bubble Containers Layout */
+  /* Message bubbles */
   .message {
     display: flex;
     align-items: flex-end;
     gap: 8px;
-    max-width: 85%;
-    animation: messageSlideIn 0.3s ease;
+    max-width: 88%;
+    animation: messageSlideIn 0.28s ease;
     position: relative;
   }
-
-  .message.bot {
-    align-self: flex-start;
-    padding-right: 30px; 
-  }
-
-  .message.user {
-    align-self: flex-end;
-    flex-direction: row-reverse;
-  }
+  .message.bot  { align-self: flex-start; padding-right: 24px; }
+  .message.user { align-self: flex-end;   flex-direction: row-reverse; }
 
   .msg-avatar {
-    width: 28px;
-    height: 28px;
+    width: 30px; height: 30px;
     border-radius: 50%;
     background: #e2e8f0;
     background-image: url('images/sharuhkhan-pfp.png');
     background-size: cover;
     flex-shrink: 0;
   }
-
   .bubble {
-    padding: 12px 16px;
-    border-radius: 14px;
-    font-size: 14px;
-    line-height: 1.4;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    padding: 11px 15px;
+    border-radius: 16px;
+    font-size: 13.5px;
+    line-height: 1.55;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
   }
-
   .bot .bubble {
-    background: #eef4fa;
+    background: #fff;
     color: #0c2340;
+    border: 1px solid #E4EDF8;
     border-bottom-left-radius: 4px;
   }
-
   .user .bubble {
-    background: var(--blue-dark);
+    background: linear-gradient(135deg, var(--blue-primary), var(--blue-mid));
     color: white;
     border-bottom-right-radius: 4px;
   }
 
-  /* --- ACTIONS MENU UI --- */
+  /* Typing cursor */
+  .typing-cursor {
+    display: inline-block;
+    width: 2px;
+    height: 14px;
+    background: var(--blue-primary);
+    margin-left: 2px;
+    vertical-align: middle;
+    animation: blink 0.7s infinite;
+    border-radius: 1px;
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0; }
+  }
+
+  /* Follow-up chips */
+  .followup-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+    padding-left: 38px;
+    animation: messageSlideIn 0.3s ease;
+  }
+  .followup-chip {
+    background: #EFF6FF;
+    border: 1.5px solid #BFDBFE;
+    color: #1d4ed8;
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.18s, border-color 0.18s;
+    white-space: nowrap;
+  }
+  .followup-chip:hover { background: #DBEAFE; border-color: #3b82f6; }
+
+  /* Message options */
   .msg-options-wrapper {
     position: absolute;
     right: 0;
@@ -799,71 +906,144 @@
     display: flex;
     align-items: center;
   }
-
   .msg-options-btn {
-    background: none;
-    border: none;
-    color: #94a3b8;
-    cursor: pointer;
-    padding: 6px;
-    font-size: 14px;
+    background: none; border: none;
+    color: #94a3b8; cursor: pointer;
+    padding: 6px; font-size: 13px;
     border-radius: 50%;
-    opacity: 0; 
+    opacity: 0;
     transition: opacity 0.2s, color 0.2s;
   }
-
   .message.bot:hover .msg-options-btn,
-  .msg-options-btn:focus {
-    opacity: 1;
-    color: #64748b;
-  }
-
+  .msg-options-btn:focus { opacity: 1; color: #64748b; }
   .msg-action-menu {
     display: none;
     position: absolute;
-    top: 100%;
-    right: 0;
+    top: 100%; right: 0;
     background: white;
     border: 1px solid #e2e8f0;
     border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     z-index: 10;
     min-width: 130px;
     overflow: hidden;
     animation: fadeIn 0.15s ease-out;
   }
-
-  .msg-action-menu.show {
-    display: block;
-  }
-
+  .msg-action-menu.show { display: block; }
   .msg-action-item {
-    width: 100%;
-    padding: 10px 14px;
-    background: none;
-    border: none;
-    text-align: left;
+    width: 100%; padding: 10px 14px;
+    background: none; border: none;
+    text-align: left; font-size: 13px;
+    color: #ef4444; font-weight: 500;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .msg-action-item:hover { background: #fef2f2; }
+
+  /* ─── SUGGESTIONS DROPDOWN ─── */
+  .suggestions-box {
+    position: absolute;
+    bottom: 100%;
+    left: 0; right: 0;
+    background: #fff;
+    border: 1.5px solid #BFDBFE;
+    border-radius: 14px 14px 0 0;
+    overflow: hidden;
+    box-shadow: 0 -8px 24px rgba(0,50,150,0.12);
+    z-index: 50;
+    display: none;
+  }
+  .suggestions-box.open { display: block; }
+  .suggestion-item {
+    padding: 10px 16px;
     font-size: 13px;
-    color: #ef4444; 
-    font-weight: 500;
+    color: #1e3a8a;
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
+    border-bottom: 1px solid #EFF6FF;
+    transition: background 0.15s;
   }
+  .suggestion-item:last-child { border-bottom: none; }
+  .suggestion-item:hover { background: #EFF6FF; }
+  .suggestion-item i { color: var(--blue-primary); font-size: 12px; }
 
-  .msg-action-item:hover {
-    background-color: #fef2f2;
+  /* ─── CHAT INPUT AREA ─── */
+  .chat-input-wrap {
+    padding: 14px 16px;
+    background: white;
+    border-top: 1px solid #E4EDF8;
+    flex-shrink: 0;
+    position: relative;
   }
+  .input-wrapper {
+    display: flex;
+    align-items: center;
+    border: 2px solid #BFDBFE;
+    border-radius: 14px;
+    padding: 6px 6px 6px 14px;
+    background: #fff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .input-wrapper:focus-within {
+    border-color: var(--blue-primary);
+    box-shadow: 0 0 0 3px rgba(0,80,160,0.10);
+  }
+  .chat-input-container input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 6px 0;
+    font-size: 14px;
+    background: transparent;
+    color: var(--text-dark);
+  }
+  .send-btn {
+    width: 36px; height: 36px;
+    background: var(--blue-primary);
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.18s, transform 0.15s;
+    flex-shrink: 0;
+  }
+  .send-btn:hover { background: var(--blue-dark); transform: scale(1.05); }
+  .send-btn svg { width: 16px; height: 16px; }
+  .action-icon {
+    color: #7f8c8d; cursor: pointer;
+    font-size: 15px;
+    background: none; border: none;
+    padding: 4px 8px;
+  }
+  .action-icon:hover { color: var(--blue-primary); }
+  .quick-pills {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  .quick-pill {
+    background: #EFF6FF;
+    border: 1px solid #BFDBFE;
+    color: #1d4ed8;
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 11.5px;
+    cursor: pointer;
+    transition: background 0.15s;
+    white-space: nowrap;
+  }
+  .quick-pill:hover { background: #DBEAFE; }
 
-  /* --- REPORT FORM OVERLAY MODAL --- */
+  /* ─── REPORT / HISTORY OVERLAYS ─── */
   .report-overlay {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(12, 35, 64, 0.6); 
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(12,35,64,0.55);
     backdrop-filter: blur(2px);
     z-index: 50;
     display: flex;
@@ -874,157 +1054,38 @@
     pointer-events: none;
     transition: opacity 0.25s ease;
   }
-
-  .report-overlay.active {
-    opacity: 1;
-    pointer-events: auto;
-  }
-
+  .report-overlay.active { opacity: 1; pointer-events: auto; }
   .report-form-card {
     background: white;
     width: 100%;
-    max-width: 320px;
-    border-radius: 14px;
-    padding: 20px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    max-width: 340px;
+    border-radius: 16px;
+    padding: 22px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.22);
     animation: cardScaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   }
-
-  .report-form-card h4 {
-    color: #0c2340;
-    font-size: 16px;
-    margin-bottom: 12px;
-    font-weight: 600;
-  }
-
-  .form-group {
-    margin-bottom: 14px;
-  }
-
-  .form-group label {
-    display: block;
-    font-size: 12px;
-    color: #64748b;
-    margin-bottom: 6px;
-    font-weight: 500;
-  }
-
+  .report-form-card h4 { color: #0c2340; font-size: 16px; margin-bottom: 14px; font-weight: 700; }
+  .form-group { margin-bottom: 14px; }
+  .form-group label { display: block; font-size: 12px; color: #64748b; margin-bottom: 6px; font-weight: 500; }
   .form-group select, .form-group textarea {
-    width: 100%;
-    border: 1.5px solid #cbd5e1;
-    border-radius: 8px;
-    padding: 8px 12px;
-    font-size: 13px;
-    color: #333;
-    outline: none;
+    width: 100%; border: 1.5px solid #cbd5e1;
+    border-radius: 8px; padding: 8px 12px;
+    font-size: 13px; color: #333; outline: none;
     transition: border-color 0.2s;
   }
+  .form-group select:focus, .form-group textarea:focus { border-color: var(--blue-primary); }
+  .form-group textarea { resize: none; height: 70px; }
+  .form-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; }
+  .btn { padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; }
+  .btn-cancel { background: #f1f5f9; color: #64748b; }
+  .btn-cancel:hover { background: #e2e8f0; }
+  .btn-submit { background: #ef4444; color: white; }
+  .btn-submit:hover { background: #dc2626; }
 
-  .form-group select:focus, .form-group textarea:focus {
-    border-color: var(--blue-primary);
-  }
-
-  .form-group textarea {
-    resize: none;
-    height: 70px;
-  }
-
-  .form-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 18px;
-  }
-
-  .btn {
-    padding: 8px 16px;
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    border: none;
-  }
-
-  .btn-cancel {
-    background: #f1f5f9;
-    color: #64748b;
-  }
-
-  .btn-cancel:hover {
-    background: #e2e8f0;
-  }
-
-  .btn-submit {
-    background: #ef4444;
-    color: white;
-  }
-
-  .btn-submit:hover {
-    background: #dc2626;
-  }
-
-  /* --- CHAT INPUT AREA --- */
-  .chat-input-container {
-    padding: 16px;
-    background: white;
-    border-top: 1px solid #e2e8f0;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .input-wrapper {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    border: 1.5px solid #bdc3c7;
-    border-radius: 25px;
-    padding: 4px 16px;
-    background: #fff;
-  }
-
-  .input-wrapper:focus-within {
-    border-color: var(--blue-primary);
-  }
-
-  .chat-input-container input {
-    width: 100%;
-    border: none;
-    outline: none;
-    padding: 8px 0;
-    font-size: 14px;
-  }
-
-  .action-icon {
-    color: #7f8c8d;
-    cursor: pointer;
-    font-size: 16px;
-    background: none;
-    border: none;
-  }
-
-  .action-icon:hover {
-    color: var(--blue-primary);
-  }
-
-  .input-actions-right {
-    display: flex;
-    gap: 12px;
-  }
-
-  /* Keyframe Animations Settings */
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(3px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes cardScaleUp {
-    from { opacity: 0; transform: scale(0.9); }
-    to { opacity: 1; transform: scale(1); }
-  }
-  @keyframes messageSlideIn {
-    from { opacity: 0; transform: translateY(5px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
+  /* Keyframes */
+  @keyframes fadeIn        { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes cardScaleUp   { from { opacity: 0; transform: scale(0.9); }      to { opacity: 1; transform: scale(1); } }
+  @keyframes messageSlideIn{ from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 </style>
 </head>
 <body>
@@ -1366,120 +1427,186 @@
   </div>
 </footer>
 
-<div class="chatbot" id="chatbotWidget">
-    <div class="chat-assistant">
-        <img src="images/shahrukh-chatbot.png" alt="Assistant" class="chatbot-avatar">
-        <div class="chat-bubble">Hi! I'm here to assist you.</div>
-    </div>
-
-    <div class="chat-btn" role="button" aria-label="Open chat" onclick="toggleChat()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-        </svg>
-        <div class="chat-dot"></div>
-    </div>
-
-    <div class="chat-window">
-        <div class="chat-header">
-            <div class="profile-area">
-                <div class="avatar"></div>
-                <div class="bot-status">
-                    <span class="bot-name">Milo</span>
-                </div>
-            </div>
-            <button class="minimize-btn" onclick="openHistoryModal()" style="margin-right: 10px;" title="Complaint History">
-                <i class="fa-solid fa-clock-rotate-left"></i>
-            </button>
-            <button class="minimize-btn" onclick="toggleChat()">
-                <i class="fa-solid fa-minus"></i>
-            </button>
-        </div>
-
-        <div class="chat-messages" id="chatMessages">
-            
-            <div class="report-overlay" id="reportOverlay">
-                <div class="report-form-card">
-                    <h4>Report an Issue</h4>
-                    <input type="hidden" id="flaggedMsgContext">
-                    
-                    <div class="form-group">
-                        <label for="issueType">What is wrong with this response?</label>
-                        <select id="issueType">
-                            <option value="Inaccurate Information">Inaccurate Information</option>
-                            <option value="Unhelpful / Irrelevant">Unhelpful / Irrelevant</option>
-                            <option value="Technical Error">Technical Error / Bad Formatting</option>
-                            <option value="Other">Other</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="issueNotes">Additional Details (Optional)</label>
-                        <textarea id="issueNotes" placeholder="Help us improve by explaining what went wrong..."></textarea>
-                    </div>
-
-                    <div class="form-actions">
-                        <button type="button" class="btn btn-cancel" onclick="closeReportForm()">Cancel</button>
-                        <button type="button" class="btn btn-submit" onclick="submitReportForm()">Submit</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="report-overlay" id="historyOverlay">
-                <div class="report-form-card" style="max-height: 80%; overflow-y: auto;">
-                    <h4>Complaint History</h4>
-                    <div id="historyList" style="margin-bottom: 15px; font-size: 13px;">
-                        Loading...
-                    </div>
-                    <div class="form-actions">
-                        <button type="button" class="btn btn-cancel" onclick="closeHistoryModal()">Close</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="message bot">
-                <div class="msg-avatar"></div>
-                <div class="bubble">Hi! I am Milo, your AI assistant. How can I help you today?</div>
-                <div class="msg-options-wrapper">
-                    <button class="msg-options-btn" onclick="toggleActionMenu(this, event)">
-                        <i class="fa-solid fa-ellipsis-vertical"></i>
-                    </button>
-                    <div class="msg-action-menu">
-                        <button class="msg-action-item" onclick="openReportForm('Hi! I am Milo, your AI assistant. How can I help you today? Rhine details.')">
-                            <i class="fa-solid fa-triangle-exclamation"></i> Report Issue
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-        <div class="chat-input-container">
-            <div class="input-wrapper">
-                <input type="text" id="userInput" placeholder="Type your message..." onkeypress="handleKeyPress(event)">
-                <button class="action-icon" onclick="sendMessage()">
-                    <i class="fa-solid fa-paper-plane"></i>
-                </button>
-            </div>
-            <div class="input-actions-right">
-                <button class="action-icon"><i class="fa-solid fa-paperclip"></i></button>
-                <button class="action-icon"><i class="fa-solid fa-microphone"></i></button>
-            </div>
-        </div>
-    </div>
+<!-- CHATBOT FAB -->
+<div class="chatbot" id="chatbotFAB">
+  <div class="chat-assistant">
+    <img src="images/shahrukh-chatbot.png" alt="Assistant" class="chatbot-avatar">
+    <div class="chat-bubble">Hi! I'm here to assist you.</div>
+  </div>
+  <div class="chat-btn" role="button" aria-label="Open chat" onclick="toggleChat()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+    </svg>
+    <div class="chat-dot"></div>
+  </div>
 </div>
+
+<!-- CHATBOT OVERLAY MODAL -->
+<div class="chatbot-overlay" id="chatbotOverlay" onclick="handleOverlayClick(event)">
+  <div class="chat-window" id="chatWindow">
+
+    <!-- HEADER -->
+    <div class="chat-header">
+      <div class="profile-area">
+        <div class="avatar"></div>
+        <div>
+          <div class="bot-name"><span class="header-status"></span>Milo</div>
+          <div class="bot-tag">Your Muthoot Fincorp AI Assistant</div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="minimize-btn" onclick="openHistoryModal()" title="Complaint History">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+        </button>
+        <button class="minimize-btn" onclick="toggleChat()" title="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- QUERY BAR -->
+    <div class="query-bar" id="queryBar">
+      <i class="fa-solid fa-circle-dot"></i>
+      <span id="queryBarText">Understanding your question...</span>
+    </div>
+
+    <!-- BODY: left chat + right related -->
+    <div class="chat-body">
+
+      <!-- LEFT: Messages -->
+      <div class="chat-left">
+        <div class="chat-messages" id="chatMessages">
+
+          <!-- Report overlay -->
+          <div class="report-overlay" id="reportOverlay">
+            <div class="report-form-card">
+              <h4>Report an Issue</h4>
+              <input type="hidden" id="flaggedMsgContext">
+              <div class="form-group">
+                <label for="issueType">What is wrong with this response?</label>
+                <select id="issueType">
+                  <option value="Inaccurate Information">Inaccurate Information</option>
+                  <option value="Unhelpful / Irrelevant">Unhelpful / Irrelevant</option>
+                  <option value="Technical Error">Technical Error / Bad Formatting</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="issueNotes">Additional Details (Optional)</label>
+                <textarea id="issueNotes" placeholder="Help us improve by explaining what went wrong..."></textarea>
+              </div>
+              <div class="form-actions">
+                <button type="button" class="btn btn-cancel" onclick="closeReportForm()">Cancel</button>
+                <button type="button" class="btn btn-submit" onclick="submitReportForm()">Submit</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- History overlay -->
+          <div class="report-overlay" id="historyOverlay">
+            <div class="report-form-card" style="max-height:80%;overflow-y:auto;">
+              <h4>Complaint History</h4>
+              <div id="historyList" style="margin-bottom:15px;font-size:13px;">Loading...</div>
+              <div class="form-actions">
+                <button type="button" class="btn btn-cancel" onclick="closeHistoryModal()">Close</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Welcome message -->
+          <div class="message bot">
+            <div class="msg-avatar"></div>
+            <div class="bubble">Hi! I am Milo, your AI assistant. 👋<br>How can I help you today?</div>
+            <div class="msg-options-wrapper">
+              <button class="msg-options-btn" onclick="toggleActionMenu(this,event)">
+                <i class="fa-solid fa-ellipsis-vertical"></i>
+              </button>
+              <div class="msg-action-menu">
+                <button class="msg-action-item" onclick="openReportForm('Hi! I am Milo, your AI assistant.')">
+                  <i class="fa-solid fa-triangle-exclamation"></i> Report Issue
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /chat-messages -->
+
+        <!-- INPUT AREA -->
+        <div class="chat-input-wrap" id="chatInputWrap">
+          <!-- Suggestions dropdown -->
+          <div class="suggestions-box" id="suggestionsBox"></div>
+
+          <div class="input-wrapper">
+            <div class="chat-input-container" style="flex:1;display:flex;align-items:center;gap:0;padding:0;border:none;background:transparent;">
+              <input type="text" id="userInput" placeholder="Ask Milo anything..."
+                oninput="handleInputChange()"
+                onkeypress="handleKeyPress(event)"
+                onfocus="handleInputFocus()"
+                onblur="handleInputBlur()"
+                autocomplete="off"
+              >
+              <button class="action-icon" title="Mic"><i class="fa-solid fa-microphone"></i></button>
+            </div>
+            <button class="send-btn" onclick="sendMessage()" id="sendBtn" title="Send">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Quick pills -->
+          <div class="quick-pills">
+            <button class="quick-pill" onclick="setAndSend('What is a gold loan?')">Gold Loan</button>
+            <button class="quick-pill" onclick="setAndSend('What is my EMI amount?')">My EMI</button>
+            <button class="quick-pill" onclick="setAndSend('How can I repay my loan?')">Repay Loan</button>
+            <button class="quick-pill" onclick="setAndSend('What documents are required?')">Documents</button>
+          </div>
+        </div>
+      </div><!-- /chat-left -->
+
+      <!-- RIGHT: Related Search -->
+      <div class="chat-right" id="chatRight">
+        <div class="related-title">Related Search Results</div>
+        <div id="relatedList">
+          <!-- Populated dynamically after each response -->
+          <button class="related-chip" onclick="setAndSend('What is a gold loan?')">
+            <i class="fa-solid fa-circle-right"></i>What is a gold loan?
+          </button>
+          <button class="related-chip" onclick="setAndSend('Who is eligible for a gold loan?')">
+            <i class="fa-solid fa-circle-right"></i>Who is eligible for a gold loan?
+          </button>
+          <button class="related-chip" onclick="setAndSend('What is the interest rate?')">
+            <i class="fa-solid fa-circle-right"></i>What is the interest rate?
+          </button>
+          <button class="related-chip" onclick="setAndSend('What documents are required?')">
+            <i class="fa-solid fa-circle-right"></i>What documents are required?
+          </button>
+          <button class="related-chip" onclick="setAndSend('How can I repay my loan?')">
+            <i class="fa-solid fa-circle-right"></i>How can I repay my loan?
+          </button>
+        </div>
+      </div><!-- /chat-right -->
+
+    </div><!-- /chat-body -->
+  </div><!-- /chat-window -->
+</div><!-- /chatbot-overlay -->
+
 <script>
   const API_BASE = "";
 
-  const widget            = document.getElementById("chatbotWidget");
-  const chatMessages      = document.getElementById("chatMessages");
-  const userInput         = document.getElementById("userInput");
-  const reportOverlay     = document.getElementById("reportOverlay");
+  const overlay       = document.getElementById("chatbotOverlay");
+  const chatMessages  = document.getElementById("chatMessages");
+  const userInput     = document.getElementById("userInput");
+  const reportOverlay = document.getElementById("reportOverlay");
+  const queryBar      = document.getElementById("queryBar");
+  const queryBarText  = document.getElementById("queryBarText");
+  const suggestionsBox= document.getElementById("suggestionsBox");
+  const relatedList   = document.getElementById("relatedList");
   const flaggedMsgContext = document.getElementById("flaggedMsgContext");
 
-  /* Auth guard: silent redirect if no token */
   const token = localStorage.getItem("access_token");
 
-  /* Personalise navbar on load */
+  // ─── AUTH / NAV ───────────────────────────────────────────────────────────────────
   document.addEventListener("DOMContentLoaded", () => {
     const name = localStorage.getItem("full_name");
     if (token && name) {
@@ -1490,7 +1617,6 @@
     }
   });
 
-  /* Logout */
   function logout() {
     localStorage.removeItem("access_token");
     localStorage.removeItem("customer_unid");
@@ -1498,14 +1624,95 @@
     window.location.href = "login.html";
   }
 
+  // ─── TOGGLE CHAT OVERLAY ─────────────────────────────────────────────────────
   function toggleChat() {
-    widget.classList.toggle("open");
-    if (widget.classList.contains("open"))
-      setTimeout(() => { chatMessages.scrollTop = chatMessages.scrollHeight; }, 100);
+    overlay.classList.toggle("open");
+    if (overlay.classList.contains("open")) {
+      setTimeout(() => { chatMessages.scrollTop = chatMessages.scrollHeight; userInput.focus(); }, 100);
+    }
+  }
+  function handleOverlayClick(e) {
+    if (e.target === overlay) toggleChat();
   }
 
-  function handleKeyPress(event) { if (event.key === "Enter") sendMessage(); }
+  // ─── RELATED SEARCH (hardcoded keyword map) ────────────────────────────────────
+  const RELATED_MAP = {
+    gold:      ["What is a gold loan?","What gold purity is accepted?","How is gold valuation done?","Can I pledge gold coins?","What is the maximum loan amount against gold?"],
+    loan:      ["How much loan can I get?","Who is eligible for a gold loan?","What documents are required?","How long does approval take?","Can I get a top-up on my loan?"],
+    interest:  ["What is the interest rate for gold loan?","Is interest rate fixed or variable?","What is LTV ratio?","What are the available loan schemes?","What is the processing fee?"],
+    repay:     ["How can I repay my loan?","Can I pay my EMI online?","Can I repay early?","What happens if I miss an EMI?","How do I close my loan?"],
+    emi:       ["What is my EMI amount?","When is my next EMI due date?","Show my payment history.","Can I change my EMI date?","What happens if I miss an EMI?"],
+    document:  ["What documents are required?","Which ID proof is accepted?","Is PAN card mandatory?","Can Aadhaar be used?","Is KYC mandatory?"],
+    kyc:       ["What is KYC and is it mandatory?","Which ID proof is accepted?","Is Aadhaar accepted as proof?","Is PAN card mandatory?","What documents are needed?"],
+    insurance: ["Does Muthoot offer insurance?","What types of insurance are available?","How do I apply for insurance?","What is life insurance?","What is health insurance?"],
+    account:   ["Show my active loans.","What is my outstanding balance?","Show my payment history.","How to check my loan status?","How to update my contact details?"],
+    eligible:  ["Who is eligible for a gold loan?","Can students apply?","Can homemakers apply?","Can farmers apply?","What is the age limit for applying?"],
+    default:   ["What is a gold loan?","What is the interest rate?","What documents are required?","How can I repay my loan?","Show my active loans."]
+  };
 
+  function updateRelatedSearch(responseText) {
+    const lc = responseText.toLowerCase();
+    let chips = RELATED_MAP.default;
+    if (lc.includes("gold"))      chips = RELATED_MAP.gold;
+    else if (lc.includes("interest") || lc.includes("rate") || lc.includes("ltv")) chips = RELATED_MAP.interest;
+    else if (lc.includes("repay") || lc.includes("payment") || lc.includes("close")) chips = RELATED_MAP.repay;
+    else if (lc.includes("emi"))   chips = RELATED_MAP.emi;
+    else if (lc.includes("document") || lc.includes("kyc") || lc.includes("aadhaar") || lc.includes("pan")) chips = RELATED_MAP.document;
+    else if (lc.includes("insurance")) chips = RELATED_MAP.insurance;
+    else if (lc.includes("loan"))  chips = RELATED_MAP.loan;
+    else if (lc.includes("account") || lc.includes("balance") || lc.includes("outstanding")) chips = RELATED_MAP.account;
+    else if (lc.includes("eligible") || lc.includes("eligib")) chips = RELATED_MAP.eligible;
+
+    // FIX: Use DOM methods instead of innerHTML onclick to avoid HTML attribute quoting issues
+    relatedList.innerHTML = "";
+    chips.forEach(q => {
+      const btn = document.createElement("button");
+      btn.className = "related-chip";
+      btn.innerHTML = `<i class="fa-solid fa-circle-right"></i>${q}`;
+      btn.addEventListener("click", () => setAndSend(q));
+      relatedList.appendChild(btn);
+    });
+  }
+
+  // ─── FOLLOW-UP QUESTIONS (per-topic) ──────────────────────────────────────────
+  const FOLLOWUP_MAP = {
+    gold:      ["What purity of gold is accepted?","How is gold valued?","Can I pledge jewellery?"],
+    loan:      ["What is the maximum loan amount?","How long does approval take?","Can I get a top-up?"],
+    interest:  ["Is the rate fixed or variable?","What is LTV ratio?","What is the processing fee?"],
+    repay:     ["Can I pay online?","Can I repay early?","What if I miss an EMI?"],
+    emi:       ["What happens if I miss an EMI?","Can I change my EMI date?","Show my payment history."],
+    document:  ["Is Aadhaar sufficient?","Is PAN mandatory?","What is KYC?"],
+    insurance: ["What types of insurance are available?","How do I file a claim?","What is health insurance?"],
+    default:   ["Tell me more.","What documents are needed?","How do I apply?"]
+  };
+
+  function getFollowups(responseText) {
+    const lc = responseText.toLowerCase();
+    if (lc.includes("gold"))      return FOLLOWUP_MAP.gold;
+    if (lc.includes("interest") || lc.includes("rate")) return FOLLOWUP_MAP.interest;
+    if (lc.includes("repay") || lc.includes("payment")) return FOLLOWUP_MAP.repay;
+    if (lc.includes("emi"))       return FOLLOWUP_MAP.emi;
+    if (lc.includes("document") || lc.includes("kyc")) return FOLLOWUP_MAP.document;
+    if (lc.includes("insurance")) return FOLLOWUP_MAP.insurance;
+    if (lc.includes("loan"))      return FOLLOWUP_MAP.loan;
+    return FOLLOWUP_MAP.default;
+  }
+
+  function appendFollowups(questions) {
+    const chips = document.createElement("div");
+    chips.className = "followup-chips";
+    questions.forEach(q => {
+      const btn = document.createElement("button");
+      btn.className = "followup-chip";
+      btn.textContent = q;
+      btn.onclick = () => setAndSend(q);
+      chips.appendChild(btn);
+    });
+    chatMessages.appendChild(chips);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  // ─── RENDER MESSAGE ─────────────────────────────────────────────────────────────────
   function renderMessage(text, sender) {
     const msgDiv = document.createElement("div");
     msgDiv.classList.add("message", sender);
@@ -1513,7 +1720,7 @@
       const safe = text.replace(/'/g, "\\'");
       msgDiv.innerHTML = `
         <div class="msg-avatar"></div>
-        <div class="bubble">${text}</div>
+        <div class="bubble">${text.replace(/\n/g, '<br>')}</div>
         <div class="msg-options-wrapper">
           <button class="msg-options-btn" onclick="toggleActionMenu(this,event)">
             <i class="fa-solid fa-ellipsis-vertical"></i>
@@ -1529,51 +1736,214 @@
     }
     chatMessages.appendChild(msgDiv);
     chatMessages.scrollTop = chatMessages.scrollHeight;
+    return msgDiv;
   }
 
-  function addTyping() {
-    const div = document.createElement("div");
-    div.className = "message bot"; div.id = "typing";
-    div.innerHTML = `<div class="msg-avatar"></div><div class="bubble" style="color:#94a3b8;font-style:italic;">Milo is typing…</div>`;
-    chatMessages.appendChild(div);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-  }
+  // ─── STREAMING RESPONSE ─────────────────────────────────────────────────────────────
+  async function streamBotResponse(text, msgEl) {
+    const bubble = msgEl.querySelector(".bubble");
+    bubble.innerHTML = ""; // clear placeholder
+    const cursor = document.createElement("span");
+    cursor.className = "typing-cursor";
+    bubble.appendChild(cursor);
 
-  function removeTyping() { const t = document.getElementById("typing"); if (t) t.remove(); }
+    let accumulated = "";
+    const words = text.split(/(\s+)/);
+    for (const word of words) {
+      accumulated += word;
+      // Update text before cursor
+      bubble.childNodes[0]?.remove(); // remove old text node
+      bubble.insertBefore(document.createTextNode(accumulated), cursor);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+      await new Promise(r => setTimeout(r, 28 + Math.random() * 22));
+    }
+    cursor.remove();
+    bubble.innerHTML = accumulated.replace(/\n/g, '<br>');
+  }
 
   async function sendMessage() {
     const text = userInput.value.trim();
     if (!text) return;
 
+    hideSuggestions();
     renderMessage(text, "user");
     userInput.value = "";
-    addTyping();
+    document.getElementById("sendBtn").disabled = true;
+
+    // Show reformulated question in query bar
+    const reformulated = text.charAt(0).toUpperCase() + text.slice(1) + (text.endsWith("?") ? "" : "?");
+    queryBarText.textContent = "Your query: " + reformulated;
+    queryBar.classList.add("visible");
+
+    // Create bot message placeholder immediately — no inline colour so CSS takes over
+    const msgDiv = document.createElement("div");
+    msgDiv.className = "message bot";
+    msgDiv.innerHTML = `
+      <div class="msg-avatar"></div>
+      <div class="bubble" style="min-width:60px;">
+        <em style="color:#94a3b8;font-size:13px;">Milo is thinking…</em><span class="typing-cursor"></span>
+      </div>`;
+    chatMessages.appendChild(msgDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
     try {
       const headers = { "Content-Type": "application/json" };
-      if (token) {
-        headers["Authorization"] = "Bearer " + token;
-      }
-      
-      const response = await fetch(API_BASE + "/api/chat", {
+      if (token) headers["Authorization"] = "Bearer " + token;
+
+      const res = await fetch(API_BASE + "/api/chat/stream", {
         method: "POST",
-        headers: headers,
+        headers,
         body: JSON.stringify({ message: text })
       });
-      removeTyping();
-      if (response.status === 401) {
-        renderMessage('Your session has expired. Please <a href="login.html" style="color:#1565C0;font-weight:600;">log in</a> again.', "bot");
+
+      if (res.status === 401) {
+        msgDiv.querySelector(".bubble").innerHTML =
+          'Your session has expired. Please <a href="login.html" style="color:#1565C0;font-weight:600;">log in</a> again.';
         localStorage.removeItem("access_token");
+        queryBar.classList.remove("visible");
         return;
       }
-      const data = await response.json();
-      renderMessage(data.response, "bot");
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      const bubble  = msgDiv.querySelector(".bubble");
+      bubble.innerHTML = "";
+      const cursor = document.createElement("span");
+      cursor.className = "typing-cursor";
+      bubble.appendChild(cursor);
+
+      let fullText = "";
+      let buffer = "";
+      let streamDone = false;   // FIX: flag to break outer while loop
+
+      while (!streamDone) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop(); // keep incomplete line
+
+        for (const line of lines) {
+          if (!line.startsWith("data: ")) continue;
+          try {
+            const payload = JSON.parse(line.slice(6));
+            if (payload.done) {
+              fullText = payload.full || fullText;
+              streamDone = true;   // FIX: signal outer loop to stop
+              break;
+            }
+            if (payload.chunk) {
+              fullText += payload.chunk;
+              // Update bubble text before cursor
+              const textNode = bubble.firstChild;
+              if (textNode && textNode.nodeType === Node.TEXT_NODE) {
+                textNode.textContent = fullText;
+              } else {
+                bubble.insertBefore(document.createTextNode(fullText), cursor);
+              }
+              chatMessages.scrollTop = chatMessages.scrollHeight;
+              await new Promise(r => setTimeout(r, 5));  // FIX: 5ms instead of 18ms
+            }
+          } catch (_) {}
+        }
+      }
+
+      // FIX: clear inline styles so bubble uses CSS colour (black text)
+      cursor.remove();
+      bubble.removeAttribute("style");
+      bubble.innerHTML = fullText.replace(/\n/g, '<br>');
+
+      // Add report button
+      const safe = fullText.replace(/'/g, "\\'");
+      const optWrap = document.createElement("div");
+      optWrap.className = "msg-options-wrapper";
+      optWrap.innerHTML = `
+        <button class="msg-options-btn" onclick="toggleActionMenu(this,event)">
+          <i class="fa-solid fa-ellipsis-vertical"></i>
+        </button>
+        <div class="msg-action-menu">
+          <button class="msg-action-item" onclick="openReportForm('${safe}')">
+            <i class="fa-solid fa-triangle-exclamation"></i> Report Issue
+          </button>
+        </div>`;
+      msgDiv.appendChild(optWrap);
+
+      // Follow-up chips
+      appendFollowups(getFollowups(fullText));
+
+      // Update related search panel
+      updateRelatedSearch(fullText);
+
     } catch (err) {
-      removeTyping();
-      renderMessage("Unable to connect to Milo. Please check your connection.", "bot");
+      const bubble = msgDiv.querySelector(".bubble");
+      bubble.textContent = "Unable to connect to Milo. Please check your connection.";
+      bubble.style.fontStyle = "normal";
+      bubble.style.color = "";
       console.error("Chat error:", err);
+    } finally {
+      document.getElementById("sendBtn").disabled = false;
+      queryBar.classList.remove("visible");
     }
   }
 
+  function setAndSend(q) {
+    userInput.value = q;
+    sendMessage();
+  }
+
+  function handleKeyPress(e) { if (e.key === "Enter") sendMessage(); }
+
+  // ─── TYPING SUGGESTIONS ──────────────────────────────────────────────────────────────
+  let suggestTimer = null;
+
+  async function handleInputChange() {
+    const q = userInput.value.trim();
+    if (!q || q.length < 2) { hideSuggestions(); return; }
+    clearTimeout(suggestTimer);
+    suggestTimer = setTimeout(async () => {
+      try {
+        const res  = await fetch(API_BASE + "/api/suggest?q=" + encodeURIComponent(q));
+        const data = await res.json();
+        showSuggestions(data.suggestions || []);
+      } catch (_) { hideSuggestions(); }
+    }, 180);
+  }
+
+  function showSuggestions(items) {
+    if (!items.length) { hideSuggestions(); return; }
+    // FIX: Use DOM methods to avoid JSON.stringify double-quote breaking HTML attributes
+    suggestionsBox.innerHTML = "";
+    items.forEach(s => {
+      const div = document.createElement("div");
+      div.className = "suggestion-item";
+      div.innerHTML = `<i class="fa-solid fa-magnifying-glass"></i>${s}`;
+      div.addEventListener("mousedown", e => {
+        e.preventDefault();
+        userInput.value = s;
+        hideSuggestions();
+        sendMessage();
+      });
+      suggestionsBox.appendChild(div);
+    });
+    suggestionsBox.classList.add("open");
+  }
+
+  function hideSuggestions() {
+    suggestionsBox.classList.remove("open");
+    suggestionsBox.innerHTML = "";
+  }
+
+  function pickSuggestion(e, text) {
+    e.preventDefault();
+    userInput.value = text;
+    hideSuggestions();
+    sendMessage();
+  }
+
+  function handleInputFocus()  { if (userInput.value.trim().length >= 2) handleInputChange(); }
+  function handleInputBlur()   { setTimeout(hideSuggestions, 150); }
+
+  // ─── REPORT / COMPLAINT ────────────────────────────────────────────────────────────
   function toggleActionMenu(button, event) {
     event.stopPropagation();
     document.querySelectorAll(".msg-action-menu").forEach(m => {
@@ -1592,90 +1962,57 @@
     document.getElementById("issueNotes").value = "";
   }
   async function submitReportForm() {
-    const token = localStorage.getItem("access_token");
-    if (!token) {
-        closeReportForm();
-        renderMessage('❌ You must be logged in to report an issue.', 'bot');
-        return;
-    }
-
-    const issueType = document.getElementById("issueType").value;
+    const tok = localStorage.getItem("access_token");
+    if (!tok) { closeReportForm(); renderMessage('❌ You must be logged in to report an issue.', 'bot'); return; }
+    const issueType  = document.getElementById("issueType").value;
     const issueNotes = document.getElementById("issueNotes").value;
     const msgContext = document.getElementById("flaggedMsgContext").value;
-
     closeReportForm();
-    
     try {
-        const res = await fetch(API_BASE + "/api/complaints", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer " + token
-            },
-            body: JSON.stringify({
-                message_context: msgContext,
-                issue_type: issueType,
-                issue_notes: issueNotes
-            })
-        });
-        
-        if (res.status === 401) {
-            renderMessage('❌ Your session expired. Please log in to report an issue.', 'bot');
-        } else if (res.ok) {
-            renderMessage('✅ Thank you — your report has been submitted. We\'ll review it shortly.', 'bot');
-        } else {
-            renderMessage('❌ Failed to submit report. Please try again.', 'bot');
-        }
-    } catch(err) {
-        renderMessage('❌ Network error. Could not submit report.', 'bot');
-    }
+      const res = await fetch(API_BASE + "/api/complaints", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + tok },
+        body: JSON.stringify({ message_context: msgContext, issue_type: issueType, issue_notes: issueNotes })
+      });
+      if (res.status === 401)  renderMessage('❌ Your session expired. Please log in to report.', 'bot');
+      else if (res.ok)         renderMessage("✅ Thank you — your report has been submitted. We'll review it shortly.", 'bot');
+      else                     renderMessage('❌ Failed to submit report. Please try again.', 'bot');
+    } catch(err) { renderMessage('❌ Network error. Could not submit report.', 'bot'); }
   }
 
   async function openHistoryModal() {
-    const token = localStorage.getItem("access_token");
+    const tok = localStorage.getItem("access_token");
     const historyOverlay = document.getElementById("historyOverlay");
-    const historyList = document.getElementById("historyList");
+    const historyList    = document.getElementById("historyList");
     historyOverlay.classList.add("active");
-    
-    if (!token) {
-        historyList.innerHTML = "<p>Please log in to view your complaint history.</p>";
-        return;
-    }
-    
+    if (!tok) { historyList.innerHTML = "<p>Please log in to view your complaint history.</p>"; return; }
     historyList.innerHTML = "<p>Loading...</p>";
     try {
-        const res = await fetch(API_BASE + "/api/complaints", {
-            headers: { "Authorization": "Bearer " + token }
-        });
-        if (res.ok) {
-            const data = await res.json();
-            if (data.length === 0) {
-                historyList.innerHTML = "<p>No complaints found.</p>";
-            } else {
-                let html = "<ul style='list-style:none; padding:0; margin:0;'>";
-                data.forEach(item => {
-                    const color = item.status === 'SOLVED' ? 'green' : 'orange';
-                    html += `<li style="border-bottom:1px solid #ddd; padding:8px 0;">
-                        <b>${item.subject}</b> - <span style="color:${color}; font-weight:bold;">[${item.status}]</span><br>
-                        <small>Complaint #${item.complaint_id}</small>
-                    </li>`;
-                });
-                html += "</ul>";
-                historyList.innerHTML = html;
-            }
-        } else {
-            historyList.innerHTML = "<p>Failed to load history.</p>";
+      const res = await fetch(API_BASE + "/api/complaints", { headers: { "Authorization": "Bearer " + tok } });
+      if (res.ok) {
+        const data = await res.json();
+        if (!data.length) { historyList.innerHTML = "<p>No complaints found.</p>"; }
+        else {
+          let html = "<ul style='list-style:none;padding:0;margin:0;'>";
+          data.forEach(item => {
+            const color = item.status === 'SOLVED' ? 'green' : 'orange';
+            html += `<li style="border-bottom:1px solid #ddd;padding:8px 0;">
+              <b>${item.subject}</b> - <span style="color:${color};font-weight:bold;">[${item.status}]</span><br>
+              <small>Complaint #${item.complaint_id}</small>
+            </li>`;
+          });
+          html += "</ul>";
+          historyList.innerHTML = html;
         }
-    } catch(err) {
-        historyList.innerHTML = "<p>Network error.</p>";
-    }
+      } else { historyList.innerHTML = "<p>Failed to load history.</p>"; }
+    } catch(err) { historyList.innerHTML = "<p>Network error.</p>"; }
   }
 
   function closeHistoryModal() {
     document.getElementById("historyOverlay").classList.remove("active");
   }
 
-  window.onclick = function () {
+  window.onclick = function() {
     document.querySelectorAll(".msg-action-menu").forEach(m => m.classList.remove("show"));
   };
 </script>
